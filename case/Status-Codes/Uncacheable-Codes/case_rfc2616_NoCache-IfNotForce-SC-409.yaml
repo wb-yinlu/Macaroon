@@ -1,0 +1,62 @@
+# ------------------------------------------------
+# Case Name:
+#      case_rfc2616_NoCache-IfNotForce-SC-409                                       
+# Case Description:                                                                
+#      the status code 409 MUST NOT be cached if not "explicitly force to cache"    
+# Testing Steps:                                                                   
+#      Step1: send a request which upstream server response with 409, and response is not force to cache
+#      Step2: verify the 409 response is not cached                                 
+# Author: wb-yinlu@taobao.com                                                      
+#      -----------------------------------------------                                  
+# Step1: send a request which upstream server response with 409, the will not force to cache 409       
+# 
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_NoCache-IfNotForce-SC-409',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/case_rfc2616_NoCache-IfNotForce-SC-409',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 409,
+        Cache-Control: public,
+        content-length: 20,
+        Last-Modified: now-31536000,
+        Expires: now + 31536000,
+        Connection: close,
+        body: content-20-123456789,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 409,
+        cache-control: public,
+        content-length: 20,
+        Last-Modified: now-31536000,
+        Date: S_Date_Step1,
+        Expires: now + 31536000,
+        Connection: close,
+        body: content-20-123456789,
+    }
+}
+
+#step 2: verifying whether the cache cached anything 
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_NoCache-IfNotForce-SC-409',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: '/case_rfc2616_NoCache-IfNotForce-SC-409',
+    }
+}

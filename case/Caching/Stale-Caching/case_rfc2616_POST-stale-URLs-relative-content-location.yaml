@@ -1,0 +1,117 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_POST-stale-URLs-relative-content-location
+# Case Description: 
+#     POST method MUST stale cached URLs matching relative Content-Location URL
+# Testing Steps:
+#    step 1: cache URL-A 
+#    step 2: whether URL-A cached
+#    step 3: POST request and responsed content-location values relative URL-A 
+#    step 4: URL-A staled
+#    Author: tutong@taobao.com
+# -----------------------------------------------
+#step 1
+--- {
+     Request: {
+        method: GET,
+        uri: '/url-a',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/url-a',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 15,
+        Last-Modified: now - 31536000,
+        Expires: now + 31536000,
+        Connection: close,
+        body: urla-aaaaaaaaab,
+        
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-length: 15,
+        Connection: close,
+        body: urla-aaaaaaaaab,
+    }
+}
+
+#step 2
+--- {
+     Request: {
+        method: GET,
+        uri: '/url-a',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+   ServerCheck: {
+        uri: EXCLUDE,
+   },
+   ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 15,
+        Connection: close,
+       body: urla-aaaaaaaaab,
+    }
+}
+
+#step 3
+--- {
+     Request: {
+        method: POST,
+        uri: '/posturl',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+        body: request_body-aaaaaaaaab,
+    },
+ ServerCheck: {
+        method: POST,
+        uri: '/posturl',
+        Host: "macaroon.zymlinux.net",
+        Content-Length: 23,
+        body: request_body-aaaaaaaaab,
+     
+   },
+     Response: {
+        protocol: HTTP/1.1,
+        statuscode: 201,
+        Content-Location: "/url-a",
+        Connection: close,
+        Last-Modified: now - 31536000,
+        Expires: now + 31536000,
+        body: post-bbbbbbbbbc,
+        Content-Length: 15,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 201,
+        Content-Location: "/url-a",
+        Content-Length: 15,
+        Connection: close,
+       body: post-bbbbbbbbbc,
+    }
+}
+#step 4
+--- {
+     Request: {
+        method: GET,
+        uri: '/url-a',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+   ServerCheck: {
+        uri: '/url-a',
+   }
+}

@@ -1,0 +1,149 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_Respcc-stale-smaxage0
+# Case Description: 
+#     Cache MUST revalidate the cached entity whose s-maxage=0
+# Testing Steps:
+#     step 1: cache something (make true the max-stale works)
+#     step 2: check if it is cached
+#     step 3: sleep for 10sec, and check if it is still cached
+#     step 4: cache something with s-maxage=0
+#     step 5: request again check whether it will revalidate the entity
+# Author: zongyi.mqh@taobao.com
+# -----------------------------------------------
+#
+# step 1: cache something (make true the max-stale works)
+--- {
+     Request: {
+        method: GET,
+        uri: '/Respcc-stale-smaxage=0',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: '/Respcc-stale-smaxage=0',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Cache-Control: max-age=8,
+        Content-Length: 15,
+        Last-Modified: now-31536000,
+        Connection: close,
+        body: RbWveXAhprnasNu,
+        
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 15,
+        Date: D_Date_Step1,
+        body: RbWveXAhprnasNu,
+    }
+}
+
+#step 2: check if it is cached
+--- {
+     Request: {
+        method: GET,
+        uri: '/Respcc-stale-smaxage=0',
+        Cache-Control: max-stale,
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: "exclude",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Cache-Control: max-age=8,
+        Content-Length: 15,
+        Last-Modified: now-31536000,
+        Date: D_Date_Step1,
+        Connection: close,
+        body: RbWveXAhprnasNu,        
+    }
+}
+
+--- {
+    sleep: 10
+}
+
+#step 3: sleep for 10sec, and check if it is still cached
+--- {
+     Request: {
+        method: GET,
+        uri: '/Respcc-stale-smaxage=0',
+        Cache-Control: max-stale,
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: "exclude",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Cache-Control: max-age=8,
+        Content-Length: 15,
+        Date: D_Date_Step1,
+        Age: ">8",
+        Connection: close,
+        body: RbWveXAhprnasNu,
+    }
+}  
+
+#step 4: cache something with s-maxage=0
+--- {
+     Request: {
+        method: GET,
+        uri: '/Respcc-stale',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: '/Respcc-stale',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Cache-Control: s-maxage = 0,
+        Content-Length: 15,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Connection: close,
+        body: WMtXKwbnxjmDNAB,
+    },
+    ClientCheck: {
+        cache-control: public,
+        cache-control: s-maxage = 0,
+        content-length: 15,
+        Date: D_Date_Step4,
+        body: WMtXKwbnxjmDNAB,
+    }
+}
+
+# step 5: request again check whether it will revalidate the entity
+--- {
+     Request: {
+        method: GET,
+        uri: '/Respcc-stale',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Cache-Control: max-stale,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: '/Respcc-stale',
+        If-Modify-Since: now-31536000,
+    }
+}

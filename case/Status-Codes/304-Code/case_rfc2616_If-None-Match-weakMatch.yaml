@@ -1,0 +1,119 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_If-None-Match-weakMatch
+# Case Description:
+#     If-None-Match weak match
+# Testing Steps:
+#     step 1: request and response
+#     step 2: identify whether cached
+#     step 3: request with if-none-match, its value like W/"xxxxx",identify 304 response 
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: request and response
+
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/If-None-Match-weakMatch',
+        protocol: HTTP/1.1,
+        Host: "macaroon.zymlinux.net",
+        Connection: close,
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/If-None-Match-weakMatch',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-86400,
+        Expires: now+86400,
+        X-A-1-ddfjuzktftwmtk: v-1-div,
+        X-A-2-v: v-2-kym,
+        X-A-3-z: v-3-lkbebujlpaqu,
+        X-A-4-mjnh: v-4-,
+        Allow: GET,
+        Content-Encoding: identity,
+        Content-Language: fi,
+        Content-MD5: 1B2M2Y8AsgTpgAmY7PhCfg==,
+        ETag: W/"fbbscnqoio",
+        content-length: 40,
+        Connection: close,
+        body: EuXqYJfyrbMWvkBZaoneQpe4A3x7t9UsHCg1NSzP,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-86400,
+        Expires: now+86400,
+        X-A-1-ddfjuzktftwmtk: v-1-div,
+        X-A-2-v: v-2-kym,
+        X-A-3-z: v-3-lkbebujlpaqu,
+        X-A-4-mjnh: v-4-,
+        Allow: GET,
+        Content-Encoding: identity,
+        Content-Language: fi,
+        Content-MD5: 1B2M2Y8AsgTpgAmY7PhCfg==,
+        ETag: W/"fbbscnqoio",
+        content-length: 40,
+        Connection: close,
+        body: EuXqYJfyrbMWvkBZaoneQpe4A3x7t9UsHCg1NSzP,
+    }
+}
+#step 2: identify whether cached
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/If-None-Match-weakMatch',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-86400,
+        Date: S_Date_Step1,
+        Expires: now+86400,
+        X-A-1-ddfjuzktftwmtk: v-1-div,
+        X-A-2-v: v-2-kym,
+        X-A-3-z: v-3-lkbebujlpaqu,
+        X-A-4-mjnh: v-4-,
+        Allow: GET,
+        Content-Encoding: identity,
+        Content-Language: fi,
+        Content-MD5: 1B2M2Y8AsgTpgAmY7PhCfg==,
+        ETag: W/"fbbscnqoio",
+        content-length: 40,
+        Connection: close,
+        body: EuXqYJfyrbMWvkBZaoneQpe4A3x7t9UsHCg1NSzP,
+    }
+}
+#step 3: request with if-none-match, its value like W/"xxxxx",identify 304 response
+
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/If-None-Match-weakMatch',
+        protocol: HTTP/1.1,
+        If-None-Match: 'W/"fbbscnqoio"',
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 304,
+        Etag: 'W/"fbbscnqoio"',
+        Cache-Control: public,
+        Expires: "exclude",
+        Connection: close,
+    }
+}    

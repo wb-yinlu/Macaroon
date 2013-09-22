@@ -1,0 +1,79 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_response-chunked-11b-block-17-surprise-trailer-withTe-to10Clt
+# Case Description:
+#       DUT MUST handle chunked body with one 11-byte block and with 17 surprise headers in the trailer response to an HTTP/1.0 client with TE: trailers
+# Testing Steps:
+#       step 1: check whether DUT handles chunked body with one 11-byte block and with 17 surprise headers in the trailer response to an HTTP/1.0 client with TE: trailers
+# Author: qihai.qh@alibaba-inc.com
+# -----------------------------------------------
+# check whether DUT handles chunked body with one 11-byte block and with 17 surprise headers in the trailer response to an HTTP/1.0 client with TE: trailers
+--- {
+    Request: {
+        method: GET,
+        uri: '/resp-chunked-10-trailer-11-17-surprise-withTe-toClt',
+        protocol: HTTP/1.0,
+        TE: trailers,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/resp-chunked-10-trailer-11-17-surprise-withTe-toClt',
+        protocol: HTTP/1.1,
+        TE: trailers,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Trailer: x1,x2,x3,x4,x5,x6,x,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,
+        Transfer-Encoding: chunked,
+        Connection: close,
+        body: "
+        b\r\n
+        11111111111\r\n
+        0\r\n
+        x1: 123\r\n
+        x2: 456\r\n
+        x3: 789\r\n
+        x4: 0ab\r\n
+        x5: cde\r\n
+        x6: fgh\r\n
+        x7: hij\r\n
+        x8: klmn\r\n
+        x9: opq\r\n
+        x10: rst\r\n
+        x11: uvw\r\n
+        x12: xyz\r\n
+        x13: 12345\r\n
+        x14: 67890\r\n
+        x15: abcdefg\r\n
+        x16: hijklmn\r\n
+        x17: opqrstuvwxyz\r\n"
+    },
+    ClientCheck: {
+        protocol: HTTP/1.0,
+        statuscode: 200,
+        content-length: 11,
+        x1: 123,
+        x2: 456,
+        x3: 789,
+        x4: 0ab,
+        x5: cde,
+        x6: fgh,
+        x7: hij,
+        x8: klmn,
+        x9: opq,
+        x10: rst,
+        x11: uvw,
+        x12: xyz,
+        x13: 12345,
+        x14: 67890,
+        x15: abcdefg,
+        x16: hijklmn,
+        x17: opqrstuvwxyz,
+        Connection: close,
+        body: 11111111111,
+    }
+}

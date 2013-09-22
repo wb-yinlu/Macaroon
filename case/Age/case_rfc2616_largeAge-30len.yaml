@@ -1,0 +1,44 @@
+# ------------------------------------------------
+# Case Name:
+#      case_rfc2616_largeAge-30len.yaml
+# Case Description: 
+#      cache MUST handle 30-length age or transmit 2147483648
+# Testing Steps:
+#      step 1: check if cache handle 30-length age or transmit 2147483648  
+# Author:zongyi.mqh@taobao.com
+# -----------------------------------------------
+#
+#step 1: check if cache handle 30-length age or transmit 2147483648
+--- {
+     Request: {
+        method: GET,
+        uri: '/largeAge-30len',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/largeAge-30len',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 20,
+        Age: 123456789012345678901234567890,
+        Connection: close,
+        body: content-20-123456789,
+        
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-length: 20,
+        Age: 2147483648,
+        Connection: close,
+        body: content-20-123456789,
+    }
+
+
+}

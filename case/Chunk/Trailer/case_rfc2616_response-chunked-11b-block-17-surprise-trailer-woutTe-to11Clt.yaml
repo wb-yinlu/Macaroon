@@ -1,0 +1,60 @@
+# ------------------------------------------------
+# Case Name:
+#      case_rfc2616_response-chunked-11b-block-17-surprise-trailer-woutTe-to11Clt 
+# Case Description:
+#       DUT MUST handle chunked body with one 11-byte block and with 17 surprise headers in the trailer response to an HTTP/1.1 client without TE: trailers
+# Testing Steps:
+#       step 1: check whether DUT handles chunked body with one 11-byte block and with 17 surprise headers in the trailer response to an HTTP/1.1 client without TE: trailers
+# Author: qihai.qh@alibaba-inc.com
+# -----------------------------------------------
+#       step 1: check whether DUT handles chunked body with one 11-byte block and with 17 surprise headers in the trailer response to an HTTP/1.1 client without TE: trailers
+--- {
+    Request: {
+        method: GET,
+        uri: '/resp-chunked-11-trailer-11-17-surprise-woutTe-toClt',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/resp-chunked-11-trailer-11-17-surprise-woutTe-toClt',
+        protocol: HTTP/1.1,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Trailer: x1,x2,x3,x4,x5,x6,x,x8,x9,x10,x11,x12,x13,x14,x15,x16,x17,
+        Transfer-Encoding: chunked,
+        Connection: close,
+        body: "
+        b\r\n
+        11111111111\r\n
+        0\r\n
+        x1: 123\r\n
+        x2: 456\r\n
+        x3: 789\r\n
+        x4: 0ab\r\n
+        x5: cde\r\n
+        x6: fgh\r\n
+        x7: hij\r\n
+        x8: klmn\r\n
+        x9: opq\r\n
+        x10: rst\r\n
+        x11: uvw\r\n
+        x12: xyz\r\n
+        x13: 12345\r\n
+        x14: 67890\r\n
+        x15: abcdefg\r\n
+        x16: hijklmn\r\n
+        x17: opqrstuvwxyz\r\n"
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        Connection: close,
+        body: 11111111111,
+    }
+}

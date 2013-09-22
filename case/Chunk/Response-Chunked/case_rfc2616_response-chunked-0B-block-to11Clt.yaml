@@ -1,0 +1,38 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_response-chunked-0B-block-to11Clt
+# Case Description:
+#       DUT MUST handle chunked body wiht 0-length block response sent to an HTTP/1.1 client 
+# Testing Steps:
+#       step 1: check whether DUT handles chunked body wiht 0-length block response sent to an HTTP/1.1 client 
+# Author: qihai.qh@alibaba-inc.com
+# -----------------------------------------------
+# check whether DUT handles 0-length body content that "chunked" response sent to an HTTP/1.1 client
+--- {
+    Request: {
+        method: GET,
+        uri: '/response-chunked-0B-block-to11Clt',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/response-chunked-0B-block-to11Clt',
+        protocol: HTTP/1.1,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Transfer-Encoding: chunked,
+        Connection: close,
+        body: "0\r\n"
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 0,
+        Connection: close,
+    }
+}

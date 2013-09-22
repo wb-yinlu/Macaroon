@@ -1,0 +1,26 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_ifNoneMatch-reqUnsupportHost
+# Case Description:
+#     If-None-Match ignored unsupported Host(400 status)
+# Testing Steps:
+#     step 1: request with unspported Host, check status
+#     step 2: request with unspported Host and if-none-match,check status
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: request with unspported Host, check status
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/ifNoneMatch-400status',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "exclude",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 400,
+    }
+}

@@ -1,0 +1,102 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_treat-query-URIs-stale-without-Expires.yaml
+# Case Description:
+#       cache MUST treat response to query URIs be stale if there is no Expires header in 
+# Testing Steps: 
+#     step 1: check whether a response without explicit expiration time can be cached
+#     step 2: check whether the response be cached
+#     step 3: send a request with a query URI
+#     step 4: check whether the response without expiration time can be cached
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: check whether a response without explicit expiration time can be cached
+--- {
+    Request: {
+        uri: '/qnwtfcbmzmmx',
+        Host: "macaroon.zymlinux.net",
+        Connection: close,
+    },
+    ServerCheck: {
+        uri: '/qnwtfcbmzmmx',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 15,
+        Last-Modified: now-31536000,
+        Connection: close,
+        body: body-onrqprdpkn,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 15,
+        Last-Modified: now-31536000,
+        Connection: close,
+        body: body-onrqprdpkn,
+    }
+}
+
+#step 2: check whether the response be cached
+--- {
+     Request: {
+        uri: '/qnwtfcbmzmmx',
+        Host: "macaroon.zymlinux.net",
+        Connection: close,
+    },
+    ServerCheck: {
+        uri: "exclude",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 15,
+        Last-Modified: now-31536000,
+        Date: S_Date_Step1,
+        body: body-onrqprdpkn,
+    }
+}
+
+#step 3: send a request with a query URI
+--- {
+     Request: {
+        uri: '/hlqjaboinmzs?name=foo',
+        Host: "macaroon.zymlinux.net",
+        Connection: close,
+    },
+    ServerCheck: {
+        uri: '/hlqjaboinmzs?name=foo',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 15,
+        Last-Modified: now-31536000,
+        Connection: close,
+        body: body-ydvbthovqj,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 15,
+        Last-Modified: now-31536000,
+        body: body-ydvbthovqj,
+    }
+}
+
+#step 4: check whether the response without expiration time can be cached
+#means: go back to the origin server
+--- {
+     Request: {
+        uri: '/hlqjaboinmzs?name=foo',
+        Host: "macaroon.zymlinux.net",
+        Connection: close,
+    },
+    ServerCheck: {
+        uri: '/hlqjaboinmzs?name=foo',
+    }
+}

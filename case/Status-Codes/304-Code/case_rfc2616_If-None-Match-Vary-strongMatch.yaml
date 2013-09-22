@@ -1,0 +1,105 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_If-None-Match-Vary-strongMatch
+# Case Description: 
+#     If-None-Match strong match with Vary header
+# Testing Steps: 
+#     step 1: request and response with Vary 
+#     step 2: identify whether cached
+#     step 3: request with if-none-match and response Vary,identify 304 response
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: request and response with Vary
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/If-None-Match-Vary-strongMatch',
+        protocol: HTTP/1.1,
+        Host: "macaroon.zymlinux.net",
+        Connection: close,
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/If-None-Match-Vary-strongMatch',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: 'public,xtension',
+        Last-Modified: now-86400,
+        Date: now,
+        Expires: now+86400,
+        Content-Location: /backend/bzehbgyopr,
+        Vary: User-Agent,
+        ETag: "migxfsphro",
+        content-length: 40,
+        Connection: close,
+        body: 56ypgJrzebUNL4MuhtG2YXqkcPHKveWOj1am7oCE,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: 'public,xtension',
+        Last-Modified: now-86400,
+        Date: now,
+        Expires: now+86400,
+        Content-Location: /backend/bzehbgyopr,
+        Vary: User-Agent,
+        ETag: "migxfsphro",
+        content-length: 40,
+        Age: 'r"^[1-9]+?[0-9]*$"',
+        Connection: close,
+        body: 56ypgJrzebUNL4MuhtG2YXqkcPHKveWOj1am7oCE,
+    }
+}
+#step 2: identify whether cached
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/If-None-Match-Vary-strongMatch',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: 'public,xtension',
+        Last-Modified: now-86400,
+        Date: now,
+        Expires: now+86400,
+        Content-Location: /backend/bzehbgyopr,
+        Vary: User-Agent,
+        ETag: "migxfsphro",
+        content-length: 40,
+        Age: 'r"^[1-9]+?[0-9]*$"',
+        Connection: close,
+        body: 56ypgJrzebUNL4MuhtG2YXqkcPHKveWOj1am7oCE,
+    }
+}
+#step 3: request with if-none-match and response Vary,identify 304 response
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/If-None-Match-Vary-strongMatch',
+        protocol: HTTP/1.1,
+        If-None-Match: '"migxfsphro"',
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 304,
+        Etag: '"migxfsphro"',
+        Cache-Control: public,
+        Expires: now+86400,
+        Content-Location: /backend/bzehbgyopr,
+        Vary: User-Agent,
+        Connection: close,
+    }
+}    

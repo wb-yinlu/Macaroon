@@ -1,0 +1,133 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_reqNoCache-cachedRssRefreshed
+# Case Description: 
+#     DUT MUST use the more recent Date if the 2nd response Date is older than the 1st response Date in cache
+# Testing Steps: 
+#     step 1: request a fresh entity 
+#     step 2: check whether it is cached
+#     step 3: request again and get a response with an older Date 
+#     step 4: check whether the cache use the more recent Date
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: request a fresh entity
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/reqNoCache-cachedRssRefreshed',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/reqNoCache-cachedRssRefreshed',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 15,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        ETag: "tag-opjkluraaz",
+        Connection: close,
+        body: ave5KtR8eyfmrYP,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        cache-control: public,
+        content-length: 15,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Date: S_Date_Step1,
+        ETag: "tag-opjkluraaz",
+        Connection: close,
+        body: ave5KtR8eyfmrYP,
+    }
+}
+
+#step 2: check whether it is cached
+--- {
+     Request: {
+        method: GET,
+        uri: '/reqNoCache-cachedRssRefreshed',
+        protocol: HTTP/1.1,
+        Host: "macaroon.zymlinux.net",
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        cache-control: public,
+        content-length: 15,
+        Last-Modified: now-31536000,
+        Date: S_Date_Step1,
+        Expires: now+31536000,
+        ETag: "tag-opjkluraaz",
+        Connection: close,
+        body: "ave5KtR8eyfmrYP",
+    }
+}
+#step 3: request again and get an older Date in the response
+ 
+--- {
+     Request: {
+        method: GET,
+        uri: '/reqNoCache-cachedRssRefreshed',
+        protocol: HTTP/1.1,
+        Cache-Control: max-age=0,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/reqNoCache-cachedRssRefreshed',
+        Cache-Control: max-age=0,
+        Host: "macaroon.zymlinux.net",
+        If-Modified-Since: now-31536000,
+        If-None-Match: "tag-opjkluraaz",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 29,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        ETag: "tag-njncyaqoif",
+        Date: S_Date_Step1-1,
+        Connection: close,
+        body: "W4FPejXeN1w2QR3RmphGt6crMf8Hv",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        cache-control: public,
+        content-length: 29,
+        Last-Modified: now-31536000,
+        Date: S_Date_Step1-1,
+        Expires: now+31536000,
+        ETag: "tag-njncyaqoif",
+        Connection: close,
+        body: "W4FPejXeN1w2QR3RmphGt6crMf8Hv",
+    }
+}
+
+#step 4: check whether the cache use the more recent Date
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/reqNoCache-cachedRssRefreshed',
+        protocol: HTTP/1.1,
+        Connection: close,
+    },
+    ClientCheck: {
+        Date: S_Date_Step1,
+    }
+}

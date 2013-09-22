@@ -1,0 +1,41 @@
+# ------------------------------------------------
+# Case Name:
+#        case_rfc2616_httpcode1XX-forward-MultiX-Header.yaml
+# Case Description: 
+#       proxy MUST forward multi response header x-headers when 101-status response(s) prior to a real response
+# Testing Steps: 
+#       step 1: send resquest and verify 101 response is transfer to client
+# Author: zongyi.mqh@taobao.com
+# -----------------------------------------------
+#step 1: send resquest and verify 101 response is transfer to client
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_httpcode1XX-forward-MultiX-Header',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/case_rfc2616_httpcode1XX-forward-MultiX-Header',
+        protocol: HTTP/1.1,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 101,
+        X-SC-01: v01,
+        X-SC-02: v02,
+        X-SC-03: v03,
+        X-SC-04: v04, 
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 101,
+        X-SC-01: v01,
+        X-SC-02: v02,
+        X-SC-03: v03,
+        X-SC-04: v04,
+    }
+}

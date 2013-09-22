@@ -1,0 +1,36 @@
+# ------------------------------------------------
+# Case Name:
+#     case_ConnectionKA_ContentLengthNone_NoChunk
+# Case Description:
+#     Server response without Content-length, without Tranfser-Encoding
+#     But with Connection:keep-alive
+# Testing Steps: 
+#     step 1: cache can handle response without Content-Length and Transfer-Encoding
+#
+# Author: buke@taobao.com
+# -------------------------------------------------------
+#
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/kgfbdmupakgg',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        content-length: exclude,
+        body: body-bhckafbath,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        body: body-bhckafbath,
+    },
+}

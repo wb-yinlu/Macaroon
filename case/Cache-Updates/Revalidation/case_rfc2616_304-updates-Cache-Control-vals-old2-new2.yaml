@@ -1,0 +1,134 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_304-updates-Cache-Control-vals-old2-new2
+# Case Description: 
+#     cache MUST update Cache Control values after a 304 response with 2 Cache-Control headers updating cached 2 Cache-Control header value
+# Testing Steps: 
+#     step 1: caching 
+#     step 2: whether cached 
+#     step 3: server check got INM and response 304 with 2 cache-control for updating cached 2 Cache-Control header 
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+# step 1
+--- {
+     Request: {
+        method: GET,
+        uri: '/url-a',
+        protocol: HTTP/1.1,
+        New-Selector: abc,
+        Host: "macaroo.zymlinux.net",
+        Connection: close,
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/url-a',
+        protocol: HTTP/1.1,
+        New-Selector: abc,
+        Host: "macaroo.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Vary: New-Selector,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Cache-Control: old-1,
+        Cache-Control: old-2,
+        ETag: "abcbbc",
+        content-length: 15,
+        Connection: close,
+        body: body-aaaaabbbbb,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Vary: New-Selector,
+        Cache-Control: old-1,
+        Cache-Control: old-2,
+        ETag: "abcbbc",
+        content-length: 15,
+        Connection: close,
+        body: body-aaaaabbbbb,
+    }
+}
+# step 2: verifying whether the cache cached anything 
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/url-a',
+        protocol: HTTP/1.1,
+        New-Selector: abc,
+        Connection: close,
+        Host: "macaroo.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: EXCLUDE,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Vary: New-Selector,
+        Cache-Control: old-1,
+        Cache-Control: old-2,
+        ETag: "abcbbc",
+        content-length: 15,
+        Connection: close,
+        body: body-aaaaabbbbb,
+    }
+}
+# step 3: performing end-to-end validation 
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/url-a',
+        protocol: HTTP/1.1,
+        New-Selector: bbc,
+        Host: "macaroo.zymlinux.net",
+        Connection: close,
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/url-a',
+        protocol: HTTP/1.1,
+        New-Selector: bbc,
+        Host: "macaroo.zymlinux.net",
+        If-None-Match: "abcbbc",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 304,
+        Cache-Control: public,
+        Vary: New-Selector,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Cache-Control: new-1,
+        Cache-Control: new-2,
+        ETag: "abcbbc",
+        content-length: 15,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+	Cache-Control: new-1,
+	Cache-Control: new-2,
+        Vary: New-Selector,
+        ETag: "abcbbc",
+        content-length: 15,
+        Connection: close,
+        body: body-aaaaabbbbb,
+    }
+}

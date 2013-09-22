@@ -1,0 +1,174 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_304Modified-newTag
+# Case Description: 
+#      If-Modified-Since and a new ETag value ,refresh status and ETag
+# Testing Steps: 
+#     step 1: request and resource and response old ETag
+#     step 2: check cached
+#     step 3: request with max-age=0 GET Method
+#     step 4: checking max-age=0 GET refreshed cache
+#     step 5: request with max-age=0 and  response with new ETag 
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: request and resource and response old ETag
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/304Modified-newTag',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/304Modified-newTag',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.0,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        ETag: W/"tag-old",
+        Connection: close,
+        content-length: 15,
+        body: aHri5vEn7ecP4JK,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        ETag: W/"tag-old",
+        content-length: 15,
+        Connection: close,
+        body: aHri5vEn7ecP4JK,
+    }
+}
+#step 2: check cached
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/304Modified-newTag',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-31536000,
+        Date: S_Date_Step1,
+        Expires: now+31536000,
+        ETag: W/"tag-old",
+        content-length: 15,
+        Connection: close,
+        body: aHri5vEn7ecP4JK,
+    }
+}
+#step 3: request with max-age=0 GET Method
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/304Modified-newTag',
+        protocol: HTTP/1.1,
+        Cache-Control: max-age=0,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/304Modified-newTag',
+        Cache-Control: max-age=0,
+        Host: "macaroon.zymlinux.net",
+        If-Modified-Since: now-31536000,
+        If-None-Match: '"tag-old"',
+    },
+    Response: {
+        protocol: HTTP/1.0,
+        statuscode: 304,
+        Cache-Control: public,
+        Expires: now+31536000,
+        ETag: W/"tag-old",
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-31536000,
+        Date: S_Date_Step3,
+        Expires: now+31536000,
+        ETag: W/"tag-old",
+        content-length: 15,
+        Age: >0,
+        Connection: close,
+        body: aHri5vEn7ecP4JK,
+    }
+}    
+#step 4: checking max-age=0 GET refreshed cache
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/304Modified-newTag',
+        protocol: HTTP/1.1,
+        Cache-Control: max-age=0,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-31536000,
+        Date: S_Date_Step3,
+        Expires: now+31536000,
+        ETag: W/"tag-old",
+        content-length: 15,
+        Connection: close,
+        body: aHri5vEn7ecP4JK,
+    }
+} 
+#step 5: request with max-age=0 and  response with new ETag
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/304Modified-newTag',
+        protocol: HTTP/1.1,
+        Cache-Control: max-age=0,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/304Modified-newTag',
+        Cache-Control: max-age=0,
+        Host: "macaroon.zymlinux.net",
+        If-Modified-Since: now-31536000,
+        If-None-Match: '"tag-old"',
+    },
+    Response: {
+        protocol: HTTP/1.0,
+        statuscode: 304,
+        Cache-Control: public,
+        Expires: now+31536000,
+        ETag: W/"tag-new",
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Date: != S_Date_Step5,
+        ETag: W/"tag-new",
+    }
+}    

@@ -1,0 +1,57 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_NoCache-IfNotForce-SC-302
+# Case Description:
+#     the status code 302 MUST NOT be cached if not "explicitly force to cache"
+# Testing Steps:
+#     Step1: send a request which upstream server response with 302, and response is not force to cache
+#     Step2: verify the 302 response is not cached
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#Step1: send a request which upstream server response with 302, the will not force to cache 302
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_NoCache-IfNotForce-SC-302',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/case_rfc2616_NoCache-IfNotForce-SC-302',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 302,
+        Cache-Control: public,
+        content-length: 20,
+        Last-Modified: now-31536000,
+        Expires: now + 31536000,
+        Connection: close,
+        body: content-20-123456789,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 302,
+        content-length: 20,
+        Connection: close,
+        body: content-20-123456789,
+    }
+}
+
+#step 2: verify the 302 response is not cached
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_NoCache-IfNotForce-SC-302',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: '/case_rfc2616_NoCache-IfNotForce-SC-302',
+    }
+}

@@ -1,0 +1,220 @@
+Author: buke <buke@taobao.com>
+Date:   Tue Sep 17 15:27:15 2013 +0800
+
+    add doConfig related method before request in data2case.py and deploy.py
+
+
+2013-09-17 Jason Lee <tutong@taobao.com>                                                
+
+    *lib/parseyaml.py: Fixed a bug for parsing yaml files when there is empty line in yaml
+
+2013-09-17 Jason Lee <tutong@taobao.com>                                                
+
+    *lib/parseyaml.py: Fixed a bug for parsing yaml files 
+
+2013-09-17 Jason Lee <tutong@taobao.com>                                                
+
+    *lib/parseyaml.py: add code for parsing config section and raise YamlParseError 
+     when error occured
+    *mutil.py: Defined YamlParseError exception
+
+2013-09-12 Jason Lee <tutong@taobao.com>                                                
+
+    *lib/httpmockserver.py: empty user defined body when clear headers
+    *runner.py: Remove output color control chars in logs
+
+2013-08-29 Jason Lee <tutong@taobao.com>                                                
+
+    *lib/httpmockserver.py: empty real request headers when clear headers
+    *mutil.py: Remove clear headers before setting response
+    *data2case.py: Add new codes for clear headers before setting response
+
+2013-08-29 Jason Lee <tutong@taobao.com>                                                
+
+    *runner.py: rewrite the module in order to fix bug:address in use
+
+2013-08-28 Jason Lee <tutong@taobao.com>                                                
+
+    *lib/httpmockserver.py: change the algrithm for getting POST-requested body
+    *lib/parseryaml.py: fixed a bug when parsing yaml whith multi lines in body
+
+2013-08-27 Jason Lee <tutong@taobao.com>                                                
+
+    *lib/agentserver.py: Added codes for no request log showing in screen and
+     no command excutting out puts on screen
+
+2013-08-27 Jason Lee <tutong@taobao.com>                                                
+
+    *lib/parseyaml.py: when parsing body for chunked, adds a extra '\r\n' if ends '0\r\n'
+    *lib/httpmockserver.py: add POST method
+
+2013-08-22 Jason Lee <tutong@taobao.com>                                                
+
+    *mutil.py: Fixed bug when detach thread not wait for thread exit
+
+2013-08-19 Jason Lee <tutong@taobao.com>                                                
+
+    *httpmockserver.py: Fixed bug while del a list variable rather than del the list content
+
+Author: buke <buke@taobao.com>
+Date:   Mon Aug 19 16:46:30 2013 +0800
+
+    Feature: command line support:
+         data2case.py --skip env-clean
+    Fixbug: transfer 123456789 serial num to string
+    Feature: HTTP/1.0 SUPPORT sendRequest setResponse
+    
+
+2013-08-19 Jason Lee <tutong@taobao.com>                                                
+
+    *httpmockserver.py: Added codes for empty request_headers that client got to
+     ensuring that the next getting request_headers is empty when there is no
+     request sent to origin server
+
+2013-08-16  Jason Lee <tutong@taobao.com>                                                
+
+    *httpmockserver.py: fixed bug in line 108. Replace '==' by '=';
+     Added sleep 0.1sec for each chuncked block; Empty url path and
+     request method after sending response to client
+
+Author: buke <buke@taobao.com>
+Date:   Thu Aug 15 22:43:09 2013 +0800
+
+        feature: add lib/contentfilter.py to process content
+        readfrom file gzip chunk ...
+        and this filter can be extended for the future usage
+
+2013-08-15  Jason Lee <tutong@taobao.com>                                                
+
+    *parseyaml.py: processing body field's data while contianing chuncked data
+    *httpmockserver.py: when setting the response with Trasfering-Encoding: chuncked
+     send the body data as chuncked
+
+2013-08-08  Jason Lee <tutong@taobao.com>                                                
+
+    *multi.py: parse D_Date_StepXX, S_Date_StepXX arithmetic statements and return
+     correct datetime values
+    *multi.py: fixed bug at line 240
+    *multi.py: fixed bug that caused by import renaming
+
+Author: buke <buke@taobao.com>
+Date:   Wed Aug 7 16:22:29 2013 +0800
+
+    add example/case_referance.yaml
+    for http/1,1 header reference when writing case
+
+
+2013-07-16  Jason Lee <tutong@taobao.com>                                                
+
+    *multi.py(printHeader()): parse D_Date_StepXX, S_Date_StepXX to correct datetime
+    *multi.py(checkHeader()): Fixed bug that incorrect args order
+    *multi.py(combineHeader()):parse D_Date_StepXX, S_Date_StepXX to correct datetime in Headers
+    *lib/httpmockserver.py(mock_HEAD()): Re-implemented mock_HEAD method
+    *lib/parseyaml.py(mapDictToList()): Fixed bug when there are more than one sleep step in yaml
+
+2013-07-16  Jason Lee <tutong@taobao.com>                                                
+
+    *multi.py: parse D_Date_StepXX, S_Date_StepXX to correct datetime
+                                                
+commit ad9f67d82dca2c023d0d402a0633eab61e4c35cf
+Author: buke <buke@taobao.com>
+Date:   Fri Jul 26 14:07:02 2013 +0800
+
+    mutil: date age content-length last-modified if-modified-since compre support num compare
+    httpmockclient: statuscode support regex compare
+
+
+2013-07-24  Jason Lee  <tutong@taobao.com>
+
+    * lib/httpmockserver.py: Add functions for return datetime string that the response
+      send
+    * mutil.py: Add code for records origin server response datetime string and DUT
+      datetime string in all steps
+    * data2py.py: Add codes for generate new .py files while mutil module add new codes
+
+2013-07-16  buke <buke@taobao.com>                                                
+
+    *feature: mutil in clientcheck method add check if request hit on cache or not
+    *         Usage: Real-Cache: HIT/MISS
+                                                
+2013-07-16  buke <buke@taobao.com>
+
+    *doc: httpmockclient add annotation
+    *doc: add new file doc/overview and write summary descreption
+          of source file
+
+2013-07-19  Jason Lee  <tutong@taobao.com>
+
+    * case/cachecase_rfc2616_scCachedNot-new-290.yaml: remove date setting from yaml file
+    * data2case.py: Add code for processing keyword 'now' in Expires, Last-Modified fields
+      to generated .py file
+    * lib/httpmockserver.py(mock_GET): for processing date field. If no date field, add it
+      and gives the current time as value; If the value is EXCLUDE, remove date field from
+      response and if the value is others, keep it!
+    * lib/parseyaml.py: fixed bug. when the field's value contains a comma(','), the value
+      will be trunked.
+    * mutil.py: Add helper functions for processing keyword now 
+
+2013-07-18  Jason Lee  <tutong@taobao.com>
+
+    * lib/httpmocksever.py (class HTTPServerMock): remove serve_forever(); remove 
+      the if-statment block for judging 'SHUTDOWN' request
+    * mutil.py (stopMockServer): calling a shutdown method in a new thread for 
+      shutting down the http mock server serving thread instead of sending a SHUTDOWN
+      request from local
+
+2013-07-18  Jason Lee  <tutong@taobao.com>
+
+    * mv envprepare/* to lib/
+    * mv envprepare/envinstall.sh to macaroon/install.sh 
+
+2013-07-15  Jason Lee  <tutong@taobao.com>
+
+    * envprepare :for framework running enviroment. Including python2.7, setuptools 
+      and pyyaml packages for python.
+
+2013-07-12  Jason Lee  <tutong@taobao.com>
+
+    * lib/parseyaml.py (removeEmptyFields(data)):bug fix. when type(v) is int and v's vaule is 0,
+      the entry will be popped.
+
+2013-07-10  Jason Lee  <tutong@taobao.com>
+
+    * lib/parseyaml.py (renameDupliName(fname, keys_l, desc)):bug fix. fixed 
+      bug when the yaml file has no comment at begining
+    * lib/agentclient.py(hasMethod(self, m)) : bug fix. fixed a bug when agent 
+      server not working; fixed a name error; fixed a close agent bug
+    * update README
+
+2013-07-09  Jason Lee  <tutong@taobao.com>
+
+    * parseyaml.py (renameDupliName(fname, keys_l, desc)):bug fix. fixed bug in pasre case descriptions
+    * runcase.sh : add a line for delete the py file that procduce by running macaroon
+    * README : Add Q&A section
+    * remove some yaml files
+
+2013-07-09  Jason Lee  <tutong@taobao.com>
+
+    * multi.py (setResponse(helpc, response)):clear headers before setting response headers
+
+2013-07-08  Jason Lee  <tutong@taobao.com>
+
+    * multi.py (setResponse(helpc, response)):if response contains body header but not containing
+      content-length header, appended content-length to response with the value is the length of
+      body. 
+
+2013-07-08  Jason Lee  <tutong@taobao.com>
+
+    * multi.py (clientCheck(response, clientcheck)):catch the exception and assign the
+      partial data to body when reading response raise an IncompleteRead exception
+
+2013-07-08  Jason Lee  <tutong@taobao.com>
+
+    * httpmockserver.py (do_HEAD()): recording url counts and request headers
+
+
+2013-07-07  Jason Lee  <tutong@taobao.com>
+
+    * httpmockserver.py (log_message()): override log_message to disabling stderr output
+    * httpmockserver.py (send_response()): override send_response to not to add header Date 
+      and Server automatically

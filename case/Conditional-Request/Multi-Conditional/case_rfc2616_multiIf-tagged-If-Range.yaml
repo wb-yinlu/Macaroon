@@ -1,0 +1,96 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_multiIf-tagged-If-Range
+# Case Description: 
+#     multiIf:If-None-Match-match,If-Modified-Since-match with If-Range-tagged,cache refresh 
+# Testing Steps: 
+#     step 1: request and cache
+#     step 2: identify whether cached
+#     step 3: request with matching If-None-Match, matching If-Modified-Since, and tagged If-Range,identify whether refreshed
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: request and cache
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/multiIf-tagged-If-Range',
+        protocol: HTTP/1.1,
+        Host: "macaroon.zymlinux.net",
+        Connection: close,
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/multiIf-tagged-If-Range',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-86400,
+        Expires: now+86400,
+        ETag: "tag-PeYLgtx",
+        Connection: close,
+        content-length: 15,
+        body: ZIHCeqr29wibhLO,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-86400,
+        Expires: now+86400,
+        ETag: "tag-PeYLgtx",
+        content-length: 15,
+        Connection: close,
+        body: ZIHCeqr29wibhLO,
+    }
+}
+#step 2: identify whether cached
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/multiIf-tagged-If-Range',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-86400,
+        Date: S_Date_Step1,
+        Expires: now+86400,
+        ETag: "tag-PeYLgtx",
+        content-length: 15,
+        Connection: close,
+        body: ZIHCeqr29wibhLO,
+    }
+}
+#step 3: request with matching If-None-Match, matching If-Modified-Since, and tagged If-Range,identify whether refreshed
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/multiIf-tagged-If-Range',
+        protocol: HTTP/1.1,
+        If-None-Match: 'tag-PeYLgtx',
+        If-Modified-Since: now-86400,
+        If-Range: "tag-PeYLgtx",
+        Range: bytes=0-10,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 206,
+        Etag: "tag-PeYLgtx",
+        Cache-Control: public,
+        Expires: now+86400,
+        Connection: close,
+    }
+}

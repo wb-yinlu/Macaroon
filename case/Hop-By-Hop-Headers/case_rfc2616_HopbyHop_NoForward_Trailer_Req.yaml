@@ -1,0 +1,27 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_HopbyHop_NoForward_Trailer_Req.yaml
+# Case Description:
+#       proxy MUST NOT forward request header: Trailer
+# Testing Steps: 
+#       step 1: check whether proxy MUST NOT forward Trailer request header
+# Author: zongyi.mqh@taobao.com
+# -----------------------------------------------
+# step 1: check whether proxy MUST NOT forward Trailer request header
+--- {
+     Request: {
+        method: GET,
+        uri: '/HopbyHop_NoForward_Trailer_Req',
+        protocol: HTTP/1.1,
+        Trailer: x-abc,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/HopbyHop_NoForward_Trailer_Req',
+        protocol: HTTP/1.1,
+        Trailer: "exclude",
+        Host: "macaroon.zymlinux.net",
+    },
+}

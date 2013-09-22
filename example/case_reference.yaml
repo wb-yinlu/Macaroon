@@ -1,0 +1,117 @@
+# ------------------------------------------------
+# Case Name:
+# Case Description:  
+# Checking Point:
+# Testing Steps: 
+#     Step1:
+#     Step2:
+#     Step3:
+# Author:
+# -----------------------------------------------
+# 
+# the header based on http/1.1 rfc2616
+#
+--- {
+     Request: {
+        ### Request Header Fields
+        Accept: ,
+        Accept-Charset: ,
+        Accept-Encoding: ,
+        Accept-Language: ,
+        Authorization: ,
+        Expect: ,
+        From: ,
+        Host: ,
+        If-Match: ,
+        If-Modified-Since: ,
+        If-None-Match: ,
+        If-Range: ,
+        If-Unmodified-Since: ,
+        Max-Forwards: ,
+        Proxy-Authorization: ,
+        Range: ,
+        Referer: ,
+        TE: ,
+        User-Agent: ,
+
+        ###General Header Fields
+        Cache-Control: ,
+        Connection: ,
+        Date: ,
+        Pragma: ,
+        Trailer: ,
+        Transfer-Encoding: ,
+        Upgrade: ,
+        Via: ,
+        Warning: ,
+
+        ### Entity Header Fields
+        Allow: ,
+        Content-Encoding: ,
+        Content-Language: ,
+        Content-Length: ,
+        Content-Location: ,
+        Content-MD5: ,
+        Content-Range: ,
+        Content-Type: ,
+        Expires: ,
+        Last-Modified: ,
+
+        ### statusline and self-define
+        statuscode: ,
+        protocol: ,
+    },
+
+    Response: {
+        ### Response Header Fields
+        Accept-Ranges: ,
+        Age: ,
+        Etag: ,
+        Location: ,
+        Proxy-Autenticate: ,
+        Retry-After: ,
+        Server: ,
+        Vary: ,
+        WWW-Authenticate: ,
+
+        ### General Header Fields
+        Cache-Control: ,
+        Connection: ,
+        Date: ,
+        Pragma: ,
+        Trailer: ,
+        Transfer-Encoding: ,
+        Upgrade: ,
+        Via: ,
+        Warning: ,
+
+        ### Entity Header Fields
+        Allow: ,
+        Content-Encoding: ,
+        Content-Language: ,
+        Content-Length: ,
+        Content-Location: ,
+        Content-MD5: ,
+        Content-Range: ,
+        Content-Type: 
+        Expires: ,
+        Last-Modified: ,
+
+        ### status line and self-define
+        statuscode: ,
+        protocol: ,
+        body: ,
+        body-length: ,
+        
+    },
+    ClientCheck: {
+        ### same as  response
+    },
+
+    ServerCheck: {
+        ### same as request
+    },
+}
+--- {
+    sleep: 10
+}

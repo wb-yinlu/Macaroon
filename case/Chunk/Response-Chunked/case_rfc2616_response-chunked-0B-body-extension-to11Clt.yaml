@@ -1,0 +1,39 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_response-chunked-0B-body-extension-to11Clt
+# Case Description: 
+#       DUT MUST handle chunked body with 0-byte block and a chunk extention responsed to an HTTP/1.1 client 
+# Testing Steps: 
+#       step 1: check whethre DUT handles chunked body with 0-byte block and a chunk extention responsed to an HTTP/1.1 client 
+# Author: zongyi.mqh@taobao.com
+# -----------------------------------------------
+# check whethre DUT handles chunked body with 0-byte block and a chunk extention responsed to an HTTP/1.1 client 
+--- {
+    Request: {
+        method: GET,
+        uri: '/response-chunked-0B-body-extension-to11Clt',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/response-chunked-0B-body-extension-to11Clt',
+        protocol: HTTP/1.1,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Transfer-Encoding: chunked,
+        Connection: close,
+        body: "0; chunk-ext\r\n"
+
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 0,
+        body: "",
+    }
+}

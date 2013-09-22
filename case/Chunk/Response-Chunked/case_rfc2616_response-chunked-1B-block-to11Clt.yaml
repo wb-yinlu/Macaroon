@@ -1,0 +1,43 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_resp-chunked-11-1B-toClt
+# Case Description:
+#       DUT MUST handle a chunked body with a 1-byte block response to an HTTP/1.1 client
+# Testing Steps:
+#       step1: check whether DUT handles a chunked body with a 1-byte block response to an HTTP/1.1 client
+# Author: qihai.qh@ailibaba-inc.com
+# -----------------------------------------------
+# check whether DUT handles a chunked 1-byte length content response to an HTTP/1.1 client
+--- {
+    Request: {
+        method: GET,
+        uri: '/resp-chunked-11-1B-toclt',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/resp-chunked-11-1B-toclt',
+        protocol: HTTP/1.1,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Transfer-Encoding: chunked,
+        Connection: close,
+        body: "
+        1\r\n
+        a\r\n
+        0\r\n"
+
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 1,
+        Connection: close,
+        body: a
+    }
+}

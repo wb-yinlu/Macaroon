@@ -1,0 +1,89 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_cc-max-stale-warning-110
+# Case Description: 
+#     cache MUST attach a Warning 110 (Response is Stale) header if stale
+#
+#     http://tools.ietf.org/html/rfc2616#section-14.9.3 Modifications of the
+#         Basic Expiration Mechanism
+#       If a cache returns a stale response, either because of a max-stale
+#       directive on a request, or because the cache is configured to
+#       override the expiration time of a response, the cache MUST attach a
+#       Warning header to the stale response, using Warning 110 (Response is
+#       stale).
+# Testing Steps: 
+#     step 1: cache a cachable content 
+#     step 2: verify whether the conent was cached and is fresh  
+#     step 3: verify whether the cached conetent is still cached after stale
+# Author: tutong@taobao.com
+# -----------------------------------------------
+#
+# step 1: cache a cachable content
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_cc-max-stale-warning-110',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Cache-Control: max-age=8,
+        Content-Length: 42,
+        Last-Modified: now-31536000,
+        Connection: close,
+        body: body-case_rfc2616_cc-max-stale-warning-110,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 42,
+        Date: S_Date_Step1,
+        Connection: close,
+        body: body-case_rfc2616_cc-max-stale-warning-110,
+    }
+}
+
+#step 2: verify whether the conent was cached and is fresh
+ 
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_cc-max-stale-warning-110',
+        protocol: HTTP/1.1,
+        Cache-Control: max-stale,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 42,
+        Date: S_Date_Step1,
+        Connection: close,
+        body: "body-case_rfc2616_cc-max-stale-warning-110",
+    }
+}
+--- {
+    sleep: 10
+}
+# step 3: verify whether the cached conetent is still cached after stale
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/body-case_rfc2616_cc-max-stale-warning-110',
+        protocol: HTTP/1.1,
+        Cache-Control: max-stale,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Date: S_Date_Step1,
+        Warning: r'110 .*',
+    }
+}
+

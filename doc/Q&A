@@ -1,0 +1,33 @@
+1. macaroon是什么?
+   Macaroon是一个方便的用于测试HTTP协议(rfc2616)一致性的测试框架. 所有的测试用例基于yaml格式的
+   数据, 在使用该框架时, 无需关心协议无关的内容,只需简单了解被测软件(DUT)如ts, swift等的简单工
+   作原理即可.
+
+2. 我改如何配置才能使得测试系统能运行起来?
+   a. 准备两台机器,一台用于安装proxy--例如TrafficServer(Proxy), 一台用于执行测试(Client).
+   b. 在proxy上安装bind, 并修改named的相关配置信息,使得named中存在一个域名可以指向Client的IP.例如
+   在named中配置www.mm.cn域名指向client的ip. 配置完毕后使用dig <域名> 来确认该域名是否指向了client.
+   c. 在client的macaroon目录下, 找到config.py文件,将_server的内容修改为Proxy的ip或者hostname,
+   _port的内容修改为proxy提供的对外服务的端口, 默认为80. 将DUT_Strart, DUT_Stop和DUT_Clean分别修改为
+   proxy对应的启动, 停止和清理缓存的命令
+   d. 将macaroon目录下的agentsever.py 拷贝至proxy机器,并使用sudo权限执行
+   e. 可以在client端执行httpmockserver.py程序, 在proxy端执行curl命令
+      curl http://<proxyip>:<port>/ -H "Host:www.mm.cn:[port]"来验证proxy到client的request是否可达
+   f. 以上步骤完毕后,可以开始测试了
+
+3. Agent必须要运行吗?
+   如果在proxy机器上不运行agent, 有可能会导致测试用例的执行结果与期待的不符
+   如何运行，如何判断运行成功？
+
+4. case中间文件
+   yaml文件在执行前被解释成.py文件，在macaroon的根目录下执行如下命令:
+      python2.7 data2case.py <yaml文件的路径>
+      命令执行完毕后会在yaml文件所在的路径下产生一个同名以.py结尾文件
+      例如:
+           yaml文件的名字为case_abc.yaml, 在/home/test/macaroon/case路径下,
+           执行:python2.7 data2case.py /home/test/macaroon/case/case_abc.yaml,
+           会在/home/test/macaroon/case/下产生文件case_abc.py.
+           执行命令: python2.7 /home/test/macaroon/case/case_abc.py 即为运行测试用例case_abc 
+
+5. 如何提交bug?
+   发送邮件给tutong@taobao.com, buke@taobao.com或者是zongyi.mqh@taobao.com

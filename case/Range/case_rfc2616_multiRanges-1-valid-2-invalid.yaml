@@ -1,0 +1,85 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_multiRanges-1-valid-2-invalid
+# Case Description: 
+#     Server MUST ignore the range header entity that includes two range intervals and the first range is valid, the second is invalid
+# Testing Steps: 
+#     step 1: request and cache
+#     step 2: verifying whether cached
+#     step 3: sending a request with the range header entities that includes two range intervals: the first is valid and the second is invalid
+# Author: tutong@taobao.com
+# -----------------------------------------------
+# request and cache
+--- {
+     Request: {
+        method: GET,
+        uri: '/multiRanges-1-valid-2-invalid',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/multiRanges-1-valid-2-invalid',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 40,
+        Last-Modified: now-31536000,
+        Expires: now+31536000 ,
+        Connection: close,
+        body: 0123456789012345678901234567890123456789,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        cache-control: public,
+        content-length: 40,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Connection: close,
+        body: 0123456789012345678901234567890123456789,
+    }
+}
+
+# verifying whether cached
+--- {
+     Request: {
+        method: GET,
+        uri: '/multiRanges-1-valid-2-invalid',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        cache-control: public,
+        content-length: 40,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Date: S_Date_Step1,
+        Connection: close,
+        body: 0123456789012345678901234567890123456789,
+    }
+}
+
+#     step 3: sending a request with the range header entities that includes two range intervals: the first is valid and the second is invalid
+--- {
+    Request: {
+        method: GET,
+        uri: '/multiRanges-1-valid-2-invalid',
+        protocol: HTTP/1.1,
+        Range: bytes=1-10, 10-1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ClientCheck: {
+        statuscode: 200,
+        content-length: 40,
+        body: 0123456789012345678901234567890123456789,
+    }
+}

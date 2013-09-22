@@ -1,0 +1,139 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_CltHEADValidate-NewEntityHdr-Content-Length-200
+# Case Description:
+#     Client-control validation could use HEAD request with Cache-Control:(max-age=0) directive, when cache 
+#     go back to validate, and get a response "200 OK" with new Entity Header "Content-Length", the cache should regard
+#     the cached object as old.
+# Testing Steps: 
+#     step 1: send a request to cache an object with "Content-Length" header
+#     step 2: resend to verify the object is cached
+#     step 3: HEAD request with "Cache-Control: max-age=0" to force cache to validate the object
+#     step 4: verify the cache regard the object as old and get a new object from upstream server
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+# step 1: send a request to cache an object with "Content-Length" header
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_CltHEADValidate-NewEntityHdr-Content-Length-200',
+        protocol: HTTP/1.1,
+        Host: "macaroon.zymlinux.net",
+        Connection: close,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Content-Length: 20,
+        Connection: close,
+        body: content-20-123456789,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 20,
+        Age: '>=0',
+        body: content-20-123456789,
+    }
+}
+# step 2: resend to verify the object is cached
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_CltHEADValidate-NewEntityHdr-Content-Length-200',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 20,
+        Age: '>=0',
+        Date: D_Date_Step1,
+        body: content-20-123456789,
+    }
+}
+
+--- {
+   sleep: 2
+}
+
+# step 3: HEAD request with "Cache-Control: max-age=0" to force cache to validate the object
+
+--- {
+     Request: {
+        method: HEAD,
+        uri: '/case_rfc2616_CltHEADValidate-NewEntityHdr-Content-Length-200',
+        protocol: HTTP/1.1,
+        Cache-Control: max-age=0,
+        Connection: close,
+    },
+    ServerCheck: {
+        method: HEAD,
+        uri: '/case_rfc2616_CltHEADValidate-NewEntityHdr-Content-Length-200',
+        protocol: HTTP/1.1,
+        Cache-Control: max-age=0,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Content-Length: 20,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 20,
+        Age: 0,
+        Connection: close,
+    }
+}
+--- {
+    sleep: 1,
+}
+# step 4: verify the cache regard the object as old and get a new object from upstream server 
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_CltHEADValidate-NewEntityHdr-Content-Length-200',
+        protocol: HTTP/1.1,
+        Host: "macaroon.zymlinux.net",
+        Connection: close,
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/case_rfc2616_CltHEADValidate-NewEntityHdr-Content-Length-200',
+        protocol: HTTP/1.1,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Content-Length: 20,
+        Connection: close,
+        body: content-20-123456789,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Date: D_Date_Step3,
+        Content-Length: 20,
+        Age: '>0',
+        Connection: close,
+        body: content-20-123456789,
+    }
+}

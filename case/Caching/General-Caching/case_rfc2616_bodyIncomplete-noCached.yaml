@@ -1,0 +1,74 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_bodyIncomplete-noCached 
+# Case Description: 
+#      bodysize less than content-length ,dont't cache
+# Testing Steps: 
+#     step 1: make a response that body less than content-length
+#     step 2: identify whether cached this response
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: make a response that body less than content-length
+--- {
+     Request: {
+        method: GET,
+        uri: '/bodyIncomplete-noCached',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 74,
+        Last-Modified: now-31536000,
+        Expires: now + 31536000,
+        Connection: close,
+        body: This body size is 73 Bytes long,it is less than content-length = 74 bytes,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 74,
+        body: This body size is 73 Bytes long,it is less than content-length = 74 bytes,
+    }
+}
+
+--- {
+    sleep: 1
+}
+
+#step 2: identify whether cached this response
+--- {
+     Request: {
+        method: HEAD,
+        uri: '/bodyIncomplete-noCached',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: HEAD,
+        protocol: HTTP/1.1,
+        uri: '/bodyIncomplete-noCached',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 74,
+        Last-Modified: now-31536000,
+        Expires: now + 31536000, 
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Date: D_Date_Step2,
+        Age: 0,
+        Connection: close,
+    }
+}

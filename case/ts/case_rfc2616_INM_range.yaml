@@ -1,0 +1,108 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_INM_range.yaml
+# Case Description: 
+#       DUT MUST handle range request with E-tag header 
+# Testing Steps: 
+#       step 1: cache something
+#       step 2: check whether it is cached
+#       step 3: send a range request with E-tag header
+# Author: zongyi.mqh@taobao.com
+# -----------------------------------------------
+#step 1: attempting to cache something
+--- {
+     Request: {
+        method: GET,
+        uri: '/qxymfhkfqxhh',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/qxymfhkfqxhh',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+	Content-Type: application/octet-stream,
+	Cache-Control: public,
+	Content-Disposition: attachment,
+	Content-Encoding: utf-8,
+	ETag: "F68ADB16DB4F1EF87D93D665CC1FFF54",
+	Expires: now-100,
+	Last-Modified: now -31536000,
+	x-oss-request-id: 521EBB01DF01CD5A3B2F51B3,
+        Content-Length: 40,
+        Connection: close,
+        body: crjccuwcdwjxwgivajlapefftjjvportfavjwsoz,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        cache-control: public,
+        content-length: 40,
+        Last-Modified: now-31536000,
+        Expires: now-100,
+        Connection: close,
+        body: crjccuwcdwjxwgivajlapefftjjvportfavjwsoz,
+    }
+}
+
+#step 2: verifying whether the cache cached the entity
+--- {
+     Request: {
+        method: GET,
+        uri: '/qxymfhkfqxhh',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        cache-control: public,
+        content-length: 40,
+        Last-Modified: now-31536000,
+        Expires: now-100,
+        Date: S_Date_Step1,
+        Connection: close,
+        body: crjccuwcdwjxwgivajlapefftjjvportfavjwsoz,
+    }
+}
+
+#step 3: sending a request with the Range and E-tag header
+--- {
+    Request: {
+        method: GET,
+        uri: '/qxymfhkfqxhh',
+        protocol: HTTP/1.1,
+        Range: bytes=0-1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        If-None-Match: "F68ADB16DB4F1EF87D93D665CC1FFF54",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 304,
+        Content-Type: application/octet-stream,
+        Cache-Control: public,
+        Content-Disposition: attachment,
+        Content-Encoding: utf-8,
+        Content-Range: bytes 0-1/40,
+        ETag: "F68ADB16DB4F1EF87D93D665CC1FFF54",
+        Expires: now-100,
+        Last-Modified: now -31536000,
+        x-oss-request-id: 521EBB01DF01CD5A3B2F51B3,
+        Connection: close,
+    },
+    ClientCheck: {
+        statuscode: 206,
+        content-range: bytes 0-1/40,
+        content-length: 2,
+        body: cr,
+    }
+}

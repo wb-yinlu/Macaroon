@@ -1,0 +1,57 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_rqst-chunked-2x100B-block
+# Case Description: 
+#       DUT MUST handle chunked request with two 100-byte blocks
+# Testing Steps: 
+#       step 1: check whether DUT handles chunked request with two 100-byte blocks
+# Author: zongyi.mqh@taobao.com
+# -----------------------------------------------
+# check whether DUT handles chunked request with two 100-byte blocks
+--- {
+    Request: {
+        method: POST,
+        uri: '/rqst-chunked-2x100B-block',
+        protocol: HTTP/1.1,
+        Transfer-Encoding: chunked,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+        body: "64\r\n
+            aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r\n
+        
+        64\r\n
+        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r\n
+        0\r\n"
+
+    },
+    ServerCheck: {
+        method: POST,
+        uri: '/rqst-chunked-2x100B-block',
+        protocol: HTTP/1.1,
+        content-length: 200,
+        Transfer-Encoding: chunked,
+        Host: "macaroon.zymlinux.net",
+        body: "64\r\n
+           aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r\n
+        
+        64\r\n
+        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r\n
+        0\r\n
+        "
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 3,
+        Connection: close,
+        body: sdl
+        
+    },
+    ClientCheck: {
+        protocol: HTTP/1.0,
+        statuscode: 200,
+        content-length: 3,
+        Connection: close,
+        body: sdl
+    }
+}
