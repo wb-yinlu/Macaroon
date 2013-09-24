@@ -1,0 +1,59 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_NoCache-IfNotForce-SC-307                                       
+# Case Description:                                                                
+#     the status code 307 MUST NOT be cached if not "explicitly force to cache"    
+# Testing Steps:                                                                   
+#     Step1: send a request which upstream server response with 307, and response is not force to cache                                                               
+#     Step2: verify the 307 response is not cached                                 
+# Author: wb-yinlu@taobao.com                                                      
+#     -----------------------------------------------                                  
+# Step1: send a request which upstream server response with 307, the will not force to cache 307                                                                       
+#
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_NoCache-IfNotForce-SC-307',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/case_rfc2616_NoCache-IfNotForce-SC-307',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 307,
+        Cache-Control: public,
+        content-length: 20,
+        Last-Modified: now-31536000,
+        Expires: now + 31536000,
+        Connection: close,
+        body: content-20-123456789,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 307,
+        cache-control: public,
+        content-length: 20,
+        Date: S_Date_Step1,
+        Connection: close,
+        body: content-20-123456789,
+    }
+}
+
+# step 2: verifying whether the cache cached anything 
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_NoCache-IfNotForce-SC-307',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: '/case_rfc2616_NoCache-IfNotForce-SC-307',
+    }
+}

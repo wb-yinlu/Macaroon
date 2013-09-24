@@ -1,0 +1,79 @@
+ ------------------------------------------------
+# Case Name:
+#       case_rfc2616_vary_Mismatch-asterisk-vary.yaml
+# Case Description:
+#       cache MUST revalidate when "*" Vary header was used in 2nd request
+# Testing Steps:
+#       step 1: cache something with "*" vary header
+#       step 2: sending a request with mismatched Varied headers 
+# Author: zongyi.mqh@taobao.com
+# -----------------------------------------------
+#step 1: cache something with "*" vary header
+--- {
+     Request: {
+        method: GET,
+        uri: '/vary_Mismatch-asterisk-vary',
+        protocol: HTTP/1.1,
+        X-a: v,
+        X-b: vlaxom,
+        X-c: vboyyckhfftnn,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/vary_Mismatch-asterisk-vary',
+        X-a: v,
+        X-b: vlaxom,
+        X-c: vboyyckhfftnn,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 15,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Vary: X-a,
+        Vary: X-b,
+        vary: *,
+        Connection: close,
+        body: body-jtbvqqnlaq,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        cache-control: public,
+        content-length: 15,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Vary: X-a,
+        Vary: X-b,
+        vary: *,
+        Connection: close,
+        body: body-jtbvqqnlaq,
+    }
+}
+#step 2: sending a request with mismatched Varied headers
+#check that a given entity instance is not cached or cached but stale
+--- {
+     Request: {
+        method: GET,
+        uri: '/vary_Mismatch-asterisk-vary',
+        protocol: HTTP/1.1,
+        X-a: v,
+        X-b: vlaxom,
+        X-c: vboyyckhfftnn,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/vary_Mismatch-asterisk-vary',
+        protocol: HTTP/1.1,
+        X-a: v,
+        X-b: vlaxom,
+        X-c: vboyyckhfftnn,
+    }
+}

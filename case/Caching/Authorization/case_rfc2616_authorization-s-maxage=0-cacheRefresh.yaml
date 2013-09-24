@@ -1,0 +1,131 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_authorization-s-maxage=0-cacheRefresh
+# Case Description:
+#     a Authorization and  s-maxage=0 request make cache refresh
+# Testing Steps:
+#     step 1: request a resource
+#     step 2: identify whether cached
+#     step 3: after sleep time,identify still cached
+#     step 4: request with Authorization and s-maxage=0
+#     step 5: check cache refresh
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: request a resource
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_authorization-s-maxage=0-cacheRefresh',
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Cache-Control: max-age=8,
+        Last-Modified: now-31536000,
+        Content-Length: 20,
+        body: content-20-123456789,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Cache-Control: max-age=8,
+        Last-Modified: now-31536000,
+        Content-Length: 20,
+        Date: D_Date_Step1,
+        body: content-20-123456789,
+    }
+}
+#step 2: identify whether cached
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_authorization-s-maxage=0-cacheRefresh',
+        protocol: HTTP/1.1,
+        Cache-Control: max-stale,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Date: D_Date_Step1,
+        Age: '>=0',
+        Content-Length: 20,
+        body: content-20-123456789,
+    }
+}
+# 
+--- {
+    sleep: 10
+}
+#step 3: after sleep time,identify still cached
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_authorization-s-maxage=0-cacheRefresh',
+        protocol: HTTP/1.1,
+        Cache-Control: max-stale,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Date: D_Date_Step1, 
+        Age: ">=10",
+        Warning: r'113 .*',
+    }
+}
+#step 4: request with Authorization and s-maxage=0
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_authorization-s-maxage=0-cacheRefresh2',
+        protocol: HTTP/1.1,
+        Authorization: scheme param="lavdfpkhtvpuhoxf",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/case_rfc2616_authorization-s-maxage=0-cacheRefresh2',
+        Authorization: scheme param="lavdfpkhtvpuhoxf",
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Cache-control: s-maxage=0,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Content-Length: 20,
+        body: content-20-123456789,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Age: 0,
+        Date: D_Date_Stepr4,
+        Content-Length: 20,
+        body: content-20-123456789,
+    }
+}
+#step 5: check cache refresh
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_authorization-s-maxage=0-cacheRefresh2',
+        protocol: HTTP/1.1,
+        Authorization: scheme param="fdcogbtzolxjmizs",
+        Cache-Control: max-stale,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Date: S_Date_Step4,
+        Content-Length: 20,
+        body: content-20-123456789,
+    }
+}

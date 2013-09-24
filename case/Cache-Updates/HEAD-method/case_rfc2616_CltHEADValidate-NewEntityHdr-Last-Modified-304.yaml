@@ -1,0 +1,133 @@
+# ------------------------------------------------
+#  Case Name:
+#      case_rfc2616_CltHEADValidate-NewEntityHdr-Last-Modified-304
+#  Case Description:
+#      Client-control validation could use HEAD request with Cache-Control:(max-age=0) directive, when cache 
+#      go back to validate, and get a response "304 Not Modified" with new Entity Header "Last-Modified", the cache should regard
+#      the cached object as old.
+#  Testing Steps: 
+#      step 1: send a request to cache an object with "Last-Modified" header
+#      step 2: resend to verify the object is cached
+#      step 3: HEAD request with "Cache-Control: max-age=0" to force cache to validate the object
+#      step 4: verify the cache regard the object as old and get a new object from upstream server
+#  Author: wb-yinlu@taobao.com
+#  -----------------------------------------------
+# 
+#  step 1: send a request to cache an object with "Last-Modified" header
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_CltHEADValidate-NewEntityHdr-Last-Modified-304',
+        protocol: HTTP/1.1,
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/case_rfc2616_CltHEADValidate-NewEntityHdr-Last-Modified-304',
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-86150,
+        Expires: now+86150,
+        Content-Length: 20,
+        body: content-20-123456789,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-86150,
+        Expires: now+86150,
+        Content-Length: 20,
+        Age: 0,
+        body: content-20-123456789,
+    }
+}
+# step 2: verifying whether the cache cached anything 
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_CltHEADValidate-NewEntityHdr-Last-Modified-304',
+        protocol: HTTP/1.1,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-86150,
+        Date: D_Date_Step1,
+        Expires: now+86150,
+        Content-Length: 20,
+        Age: ">=0",
+        body: content-20-123456789,
+    }
+}
+# step 3: sending an uncachable HEAD to later check whether it purges the object 
+
+--- {
+     Request: {
+        method: HEAD,
+        uri: '/case_rfc2616_CltHEADValidate-NewEntityHdr-Last-Modified-304',
+        protocol: HTTP/1.1,
+        Cache-Control: max-age=0,
+    },
+    ServerCheck: {
+        method: HEAD,
+        uri: '/case_rfc2616_CltHEADValidate-NewEntityHdr-Last-Modified-304',
+        protocol: HTTP/1.1,
+        Cache-Control: max-age=0,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 304,
+        Cache-Control: public,
+        Last-Modified: now-86150,
+        Expires: now+86150,
+        Content-Length: 20,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-86150,
+        Date: S_Date_Step3,
+        Expires: now+86150,
+        Content-Length: 20,
+        Age: 0,
+    }
+}
+# step 4: checking whether previous uncachable HEAD purged the object 
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_CltHEADValidate-NewEntityHdr-Last-Modified-304',
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/case_rfc2616_CltHEADValidate-NewEntityHdr-Last-Modified-304',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-86150,
+        Expires: now+86150,
+        Content-Length: 20,
+        body: content-20-123456789,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-86150,
+        Date: S_Date_Step3,
+        Expires: now+86150,
+        Content-Length: 20,
+        Age: ">=0",
+        body: content-20-123456789,
+    }
+}

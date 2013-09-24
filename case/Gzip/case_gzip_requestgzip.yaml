@@ -1,0 +1,44 @@
+# ------------------------------------------------
+# Case Name:
+#     test_case_rfc2616_Gzip_requestGzip
+# Case Description: 
+#     verify DUT can handle gzip request and response support gzip
+# Testing Steps: 
+#     step 1: verify DUT can handle gzip request and response support gzip
+#
+# Author: buke@taobao.com
+# -----------------------------------------------
+#
+# attempting to cache an entity with an ETag header
+--- {
+     Request: {
+        method: GET,
+        uri: '/hktzxguybhrk1',
+        protocol: HTTP/1.1,
+        Accept-Encoding: gzip,
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/hktzxguybhrk1',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        ETag: "foo",
+        Expires: now + 86400,
+        Last-Modified: now - 86400,
+        Content-Encoding: gzip,
+        Vary: Accept-Encoding,
+        body: file(filename=ungzipfile.txt, gzip-compresslevel=1),
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Last-modified: now - 86400,
+        Expires: now + 86400,
+        ETag: foo,
+        Content-Encoding: gzip,
+        Vary: Accept-Encoding,
+    }
+}

@@ -1,0 +1,110 @@
+Macaroon
+
+Macaroon is an efficient reverse proxy test suite, the test itself is based on python2.7 development framework to facilitate cross-platform portability; test cases using a format description, so that programming language independence. You could use Macaroon to complete the quick and easy test scenario construction, reconstruct failure cases and reverse proxy software (DUT) functions, modules, protocol conformance testing.
+
+1. DIRECTORY STRUCTURE
+	
+  macaroon/ .................. top src dir
+  |-- case ................... test cases for http1.1(rfc2616)
+  |-- CHANGES ................ change logs
+  |-- config.py .............. configuration file
+  |-- data2case.py ........... create .py from .yaml
+  |-- deploy.py .............. deploy DUT method
+  |-- doc/ ................... generated documentation
+      |-- Case_Design ........ guide of writing test cases
+      |-- Q&A ................ question&answer
+  |-- example/ ............... example of how to write a case
+      |-- case_example.yaml... test case example
+      |-- case_reference.yaml. empty test case
+  |-- lib/ ................... base lib files
+      |-- agentclient.py ..... agent for client
+      |-- agentserver.py...... agent for server
+      |-- httpmockclient.py .. mockclient
+      |-- httpmockserver.py .. mockserver
+      |-- contentfilter.py ... product the log file
+      |-- parseyaml.py ....... parse the yaml test case
+      |-- Python-2.7.tgz ..... python2.7 package
+      |-- setuptools.tar.gz... setuptools package
+      |-- PyYAML-3.10.tar.gz.. pyYAML package
+  |-- log/ ................... log files for running cases
+  |-- mutil.py ............... common methods used in cases
+  |-- README ................. intro, links, build info
+  |-- runcase.sh ............. run and debug a single case
+  |-- runner.py .............. run cases by folder
+  |-- version ................ current macaroon version
+
+
+2. Framework and case design
+	See doc/Case_Design
+
+
+3. How to Obtain
+   i. obtained from the community
+
+
+4. Install and use Macaroon
+   public testing platform address: http://XXXX (the environment has been set up to complete)
+   
+   To install and use:
+   i. hardware preparation: two machines A and B, A machine to perform the test and at the same time as the client-side and server-side, B machine installation software under test DUT - for example TrafficServer (Proxy).
+   
+   ii. Software Preparation:
+       first run sh ./install.sh
+
+        Client&Server:
+       Linux
+       Python2.7
+       PyYaml
+       Macaroon
+       git
+
+        DUT( Device Under Testing) :
+       Tested software (proxy or cache, such as TrafficServer, Swift, etc.)
+       Bind
+   
+   iii. Deploy DUT:
+         A machine from the client side to make http requests can be sent through the DUT (proxy) server machine A is reached after a proper end ----- * Important
+         For example: to install the proxy bind, modify named the relevant configuration information so named in the presence of a domain can point A machine (Client's IP), configuration is completed using dig <domain> Confirm successful.
+   
+   iv. Modify the config file:
+         In macaroon directory, find config.py file, modify the content _server proxy, ip or hostname,
+         _port modified to provide external services proxy port, for example: The default is 80.
+         The DUT_Strart, DUT_Stop and DUT_Clean modify proxy respectively corresponding start, stop and clear the cache command
+   
+   v. would macaroon directory agentsever.py copied to the proxy machine and use sudo privileges: sudo python agentserver.py
+   
+   vi. Environmental Verification:
+         In the client-side implementation httpmockserver.py: python httpmockserver.py
+         In the proxy client to perform the curl command to verify whether the proxy to the client's request up: curl http:// <proxyip>: <port> /-H "Host: XXX: [port]"
+   
+   More questions see: doc/Q&A
+
+5. How to Run the case
+    i. running a single case
+         In the root directory execute the following command: sh runcase.sh <casefile>
+    ii. run multiple cases
+         In the root directory execute the following command: python runner.py-p your-case-path-s your-email
+         See: python runner.py -h
+
+6. See case output and log
+    i. execute and debug a single test case
+         sh runcase.sh <casefile>, case execution log screen output
+
+    ii. perform multiple case
+         Execution log output to a log file, ./Log/record_XXXX.log, sorted by time
+
+
+7 how to write your use cases
+
+    i. case / create your case dir
+    ii. copies case template example / case_template_example.yaml to your case dir, rename
+    iii. editing the file
+        a. adding case file header instructions
+        b. Fill case steps and prepare the data blocks corresponding to the steps
+        c. filling and perfect every step of the data, such as request header, response header, response body, you need to check the header, etc.
+        d. Saving and debugging cases
+
+
+8 More information
+    ./doc/Documentation
+

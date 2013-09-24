@@ -1,0 +1,38 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_resp-chunked-11-65536B-toClt
+# Case Description:
+#       DUT MUST handle a chunked body with a 65536-byte block response to an HTTP/1.1 client
+# Testing Steps:
+#       step 1: check whether DUT handles a chunked body with a 65536-byte block response to an HTTP/1.1 client
+# Author: qihai.qh@alibaba-inc.com
+# -----------------------------------------------
+# check whether DUT handles a chunked body with a 65536-byte block response to an HTTP/1.1 client
+--- {
+    Request: {
+        method: GET,
+        uri: '/resp-chunked-11-65536B-toClt',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/resp-chunked-11-65536B-toClt',
+        protocol: HTTP/1.1,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Transfer-Encoding: chunked,
+        Connection: close,
+        body: "file(chunk-size=65536 B, chunk-count=1)",
+
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 65536,
+    }
+}

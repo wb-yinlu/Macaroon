@@ -1,0 +1,38 @@
+# ------------------------------------------------
+# Case Name:
+#     case_Response_ContentLengthNone_NoChunk
+# Case Description: 
+#     cache MUST handle a response without Content-Length and Transfer-Encoding header,
+#     Here, If the connection is close, read util the connection close, else return 502
+#     or other httpcode to tell the server error
+# Testing Steps: 
+#     step 1: cache can handle response without Content-Length and Transfer-Encoding
+#
+# Author: buke@taobao.com
+# -------------------------------------------------------
+#
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/kgfbdmupakgg',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        content-length: exclude,
+        Connection: close,
+        body: body-bhckafbath,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        body: body-bhckafbath,
+    },
+}

@@ -1,0 +1,99 @@
+# ------------------------------------------------
+# Case Name:
+#       case_stale-response-304-with-Content-Range.yaml
+# Case Description: 
+#       cache should able to handle stale response 304 with Content-Range
+# Testing Steps: 
+#       step 1: cache something
+#       step 2: check whether it is cached
+#       step 3: send a ranged request after stale, verify the Content-Range
+# Author: zongyi.mqh@taobao.com
+# -----------------------------------------------
+#step 1: cache something
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_stale-response-304-with-Content-Range',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/case_stale-response-304-with-Content-Range',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Type: text/plain,
+        Cache-Control: max-age=20,
+        ETag: "df2fff17100cc2db5c26cf518040f36e",
+        Content-Length: 47,
+        Connection: close,
+        body: body-case_stale-response-304-with-Content-Range,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 47,
+        Connection: close,
+        body: body-case_stale-response-304-with-Content-Range,
+    }
+}
+
+--- {
+     sleep: 10
+}
+
+#step 2: verifying whether the cache cached the entity
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_stale-response-304-with-Content-Range',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 47,
+        Connection: close,
+        body: body-case_stale-response-304-with-Content-Range,
+    }
+}
+
+
+--- {
+     sleep: 20
+}
+
+
+#step 3: verifying whether the document expired
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_stale-response-304-with-Content-Range',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Range: bytes=5-10,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        If-None-Match: "df2fff17100cc2db5c26cf518040f36e",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 304,
+        Cache-Control: max-age=30,
+        Content-Range: bytes 5-10/40,
+        ETag: "df2fff17100cc2db5c26cf518040f36e",
+        Connection: close,
+    },
+    ClientCheck: {
+        statuscode: 206,
+        Content-Range: bytes 5-10/40,
+        protocol: HTTP/1.1,
+    }
+}

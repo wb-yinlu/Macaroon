@@ -1,0 +1,85 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_spaced-invalid-Range
+# Case Description: 
+#     server MUST ignore the Range header that includes a syntactically invalid spaced range
+# Testing Steps: 
+#     step 1: request and caching data
+#     step 2: verifying whether the data cached
+#     step 3: sending a request with the Range header that includes a syntactically invalid spaced range
+# Author: tutong@taobao.com
+# -----------------------------------------------
+# request and caching data
+--- {
+     Request: {
+        method: GET,
+        uri: '/spaced-invalid-Range',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/spaced-invalid-Range',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 40,
+        Last-Modified: now-31536000,
+        Expires: now+31536000 ,
+        Connection: close,
+        body: 0123456789012345678901234567890123456789,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        cache-control: public,
+        content-length: 40,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Connection: close,
+        body: 0123456789012345678901234567890123456789,
+    }
+}
+
+# verifying whether the data cached
+--- {
+     Request: {
+        method: GET,
+        uri: '/spaced-invalid-Range',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        cache-control: public,
+        content-length: 40,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Date: S_Date_Step1,
+        Connection: close,
+        body: 0123456789012345678901234567890123456789,
+    }
+}
+
+# sending a request with the Range header that includes a syntactically invalid spaced range
+--- {
+    Request: {
+        method: GET,
+        uri: '/spaced-invalid-Range',
+        protocol: HTTP/1.1,
+        Range: bytes=10 - 1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ClientCheck: {
+        statuscode: 200,
+        content-length: 40,
+        body: 0123456789012345678901234567890123456789,
+    }
+}

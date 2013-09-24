@@ -1,0 +1,79 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_response-chunked-11b-block-17-announced-trailer-withTe-to11Clt
+# Case Description:
+#       DUT MUST handle chunked body with one 11-byte block and with 17 announced headers in the trailer response to an HTTP/1.1 client with TE: trailers
+# Testing Steps:
+#       step 1: check whether DUT handles chunked body with one 11-byte block and with 17 announced headers in the trailer response to an HTTP/1.1 client with TE: trailers
+# Author: qihai.qh@alibaba-inc.com
+# -----------------------------------------------
+# check whether DUT handles chunked body with one 11-byte block and with 17 announced headers in the trailer response to an HTTP/1.1 client with TE: trailers
+--- {
+    Request: {
+        method: GET,
+        uri: '/resp-chunked-11-trailer-11-17-announced-withTe-toClt',
+        protocol: HTTP/1.1,
+        TE: trailers,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/resp-chunked-11-trailer-11-17-announced-withTe-toClt',
+        protocol: HTTP/1.1,
+        TE: trailers,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Trailer: Cache-Control,Content-Type,Vary,Accept-Ranges,Backend-Server,Age,Etag,Expect,Date,Last-Modified,Expires,From,If-Match,Retry-After,
+        Transfer-Encoding: chunked,
+        Connection: close,
+        body: "
+        b\r\n
+        11111111111\r\n
+        0\r\n
+        Cache-Control: x-maxage=100\r\n
+        Cache-Control: max-age=10\r\n
+        Cache-Control: min-fresh=10000000\r\n
+        Cache-Control: max-stale=1000\r\n
+        Content-Type: image/x-ms-bmp\r\n
+        Vary: Accept-Encoding\r\n
+        Accept-Ranges: bytes\r\n
+        Backend-Server: esi0\r\n
+        Age: 7\r\n
+        Etag: zzz\r\n
+        Expect:100-Continue\r\n
+        Date: Fri, 02 Aug 2013 07:26:28 GMT\r\n
+        Last-Modified: Thu, 09 Aug 2012 09:27:34 GMT\r\n
+        Expires: Fri, 02 Aug 2023 08:26:28 GMT\r\n
+        From: qihai.qh@alibaba-inc.com\r\n
+        If-Match: *\r\n
+        Retry-After: 120\r\n"
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        Cache-Control: x-maxage=100,
+        Cache-Control: max-age=10,
+        Cache-Control: min-fresh=10000000,
+        Cache-Control: max-stale=1000,
+        Content-Type: image/x-ms-bmp,
+        Vary: Accept-Encoding,
+        Accept-Ranges: bytes,
+        Backend-Server: esi0,
+        Age: 7,
+        Etag: zzz,
+        Expect:100-Continue,
+        Date: "Fri, 02 Aug 2013 07:26:28 GMT",
+        Last-Modified: "Thu, 09 Aug 2012 09:27:34 GMT",
+        Expires: "Fri, 02 Aug 2023 08:26:28 GMT",
+        From: qihai.qh@alibaba-inc.com,
+        If-Match: "*",
+        Retry-After: 120,
+        Connection: close,
+        body: 11111111111,
+    }
+}

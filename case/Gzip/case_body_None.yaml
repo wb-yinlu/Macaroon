@@ -1,0 +1,46 @@
+# ------------------------------------------------
+# Case Name:
+#     case_body_None
+# Case Description: 
+#     DUT MUST handle content-length: 0  gzip response
+# Testing Steps: 
+#     step 1: verify DUT can handle content-length zero and gzip response
+#
+# Author: buke@taobao.com
+# -----------------------------------------------
+#
+# attempting to cache an entity with an ETag header
+--- {
+     Request: {
+        method: GET,
+        uri: '/hktzxguybhrk1',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Accept-Encoding: gzip,
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/hktzxguybhrk1',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        ETag: "foo",
+        Expires: now + 86400,
+        Last-Modified: now - 86400,
+        Connection: close,
+        Content-Encoding: gzip,
+        Vary: Accept-Encoding,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Last-modified: now - 86400,
+        Expires: now + 86400,
+        ETag: foo,
+        body: "",
+        Vary: Accept-Encoding,
+        Content-Encoding: gzip,
+    }
+}

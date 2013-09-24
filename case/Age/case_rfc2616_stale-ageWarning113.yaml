@@ -1,0 +1,65 @@
+# ------------------------------------------------
+# Case Name:
+#    case_rfc2616_stale-ageWarning113.yaml
+# Case Description: 
+#    cache MUST attach Warning 113 to hits older than 1day
+#    http://tools.ietf.org/html/rfc2616#section-13.2.4 Expiration Calculations
+#      The cache MUST attach Warning 113 to any response whose age is more than
+#      24 hours if such warning has not already been added.
+# Testing Steps:
+#    step 1: cache something age=86401 directive
+#    step 2: verify the cached entity hits and additional warning 113
+#
+# Author: buke@taobao.com
+# -----------------------------------------------
+#
+#step 1: cache something age=86403 directive
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_stale-ageWarning113',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 37,
+        Last-Modified: now-31536000,
+        Age: 86403,
+        Connection: close,
+        body: body-case_rfc2616_stale-ageWarning113,
+        
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-length: 37,
+        Age: 86403,
+        Connection: close,
+        body: body-case_rfc2616_stale-ageWarning113,
+    }
+}
+
+#step 2: verify the cached entity hits and additional warning 113
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_stale-ageWarning113',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: EXCLUDE,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        age: ">=86403",
+        content-length: 37,
+        Warning: r'113 *',
+    },
+}

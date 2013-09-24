@@ -1,0 +1,97 @@
+# ------------------------------------------------
+# Case Name:
+#       case_varyx1_MultiCopy_MisMathwith-X-Header.yaml
+# Case Description: 
+#       cache MUST revalidate when the url has multi copy based on Header 'Vary', if the Vary defined header is diff
+# Testing Steps:
+#       step 1: cache an object with Request -> 'X-Header': diff1, Response -> Vary: X-Header
+#       step 2: verify the object is cached with Header 'Vary' 
+#       step 3: send a request with diff vary, the cache will go back to validate the object, X-Header: diff2
+# Author: zongyi.mqh@taobao.com
+# -----------------------------------------------
+#step 1: cache an object with header(s) 'Vary'
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_varyx1_MultiCopy_MisMathwith-X-Header',
+        protocol: HTTP/1.1,
+        X-Header: "diff1",
+        X-Aahpdvxj: helloxvary,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/case_varyx1_MultiCopy_MisMathwith-X-Header',
+        X-Header: "BaR",
+        X-Aahpdvxj: helloxvary,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 15,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Vary: X-Header,
+        Connection: close,
+        body: xxssdfakjuiqsss,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        cache-control: public,
+        content-length: 15,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Vary: X-Header,
+        Connection: close,
+        body: xxssdfakjuiqsss,
+    }
+}
+#step 2: verify the object is cached with Header 'Vary'
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_varyx1_MultiCopy_MisMathwith-X-Header',
+        protocol: HTTP/1.1,
+        X-Header: "diff1",
+        X-Aahpdvxj: helloxvary,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        cache-control: public,
+        content-length: 15,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Date: S_Date_Step1,
+        Vary: X-Header,
+        Connection: close,
+        body: xxssdfakjuiqsss,
+    }
+}
+#step 3: send a request with diff vary, the cache will go back to validate the object
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_varyx1_MultiCopy_MisMathwith-X-Header',
+        protocol: HTTP/1.1,
+        X-Header: "diff2",
+        X-Aj: helloxvary2,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/case_varyx1_MultiCopy_MisMathwith-X-Header',
+        protocol: HTTP/1.1,
+        X-Header: "diff2",
+        X-Aj: helloxvary2,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    }
+}

@@ -1,0 +1,44 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_response-chunked-11b-block-1-surprise-trailer-woutTe-to10Clt
+# Case Description:
+#       DUT MUST handle chunked body with one 11-byte body and with 1 surprise header in the trailer response to an HTTP/1.0 client without TE: trailers
+# Testing Steps:
+#       step 1: check whether DUT handles chunked body with one 11-byte body and with 1 surprise header in the trailer response to an HTTP/1.0 client without TE: trailers
+# Author: qihai.qh@alibaba-inc.com
+# -----------------------------------------------
+# check whether DUT handles chunked body with one 11-byte body and with 1 surprise header in the trailer response to an HTTP/1.0 client without TE: trailers
+--- {
+    Request: {
+        method: GET,
+        uri: '/resp-chunked-10-trailer-11-1-surprise-woutTe-toClt',
+        protocol: HTTP/1.0,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/resp-chunked-10-trailer-11-1-surprise-woutTe-toClt',
+        protocol: HTTP/1.1,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Transfer-Encoding: chunked,
+        Connection: close,
+        body: "
+        b\r\n
+        11111111111\r\n
+        0\r\n
+        X-abc: ttt\r\n"
+
+    },
+    ClientCheck: {
+        protocol: HTTP/1.0,
+        statuscode: 200,
+        content-length: 11,
+        Connection: close,
+        body: 11111111111,
+    }
+}

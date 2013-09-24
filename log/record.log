@@ -1,0 +1,1 @@
+When you run the cases, using "python runner.py -p your-case-path -s your-email", you will get the record_XXX.log. XXX is the time you ran the cases.

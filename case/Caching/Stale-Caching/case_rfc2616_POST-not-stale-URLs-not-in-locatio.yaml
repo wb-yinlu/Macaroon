@@ -1,0 +1,252 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_POST-not-stale-URLs-not-in-location
+# Case Description: 
+#     POST method MUST NOT invalidate cached entries with request uri not in response Location entity
+# Testing Steps:
+#    step 1: cache URL-A 
+#    step 2: whether URL-A cached
+#    step 3: POST request and responsed location values URL-A 
+#    step 4: URL-A staled
+#    step 5: cache URL-B 
+#    step 6: whether URL-B cached
+#    step 7: POST request and responsed location values URL-c
+#    step 8: URL-c still cached and not invalidate
+# Author: tutong@taobao.com
+# -----------------------------------------------
+#step 1
+--- {
+     Request: {
+        method: GET,
+        uri: '/url-a',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/url-a',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 15,
+        Last-Modified: now - 31536000,
+        Expires: now + 31536000,
+        Connection: close,
+        body: urla-aaaaaaaaab,
+        
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-length: 15,
+        Connection: close,
+        body: urla-aaaaaaaaab,
+    }
+}
+
+#step 2
+--- {
+     Request: {
+        method: GET,
+        uri: '/url-a',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+   ServerCheck: {
+        uri: EXCLUDE,
+   },
+   ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 15,
+        Connection: close,
+       body: urla-aaaaaaaaab,
+    }
+}
+
+#step 3
+--- {
+     Request: {
+        method: POST,
+        uri: '/posturl',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+        body: request_body-aaaaaaaaab,
+    },
+ ServerCheck: {
+        method: POST,
+        uri: '/posturl',
+        Host: "macaroon.zymlinux.net",
+        Content-Length: 23,
+        body: request_body-aaaaaaaaab,
+     
+   },
+     Response: {
+        protocol: HTTP/1.1,
+        statuscode: 201,
+        Location: "http://macaroon.zymlinux.net/url-a",
+        Connection: close,
+        Last-Modified: now - 31536000,
+        Expires: now + 31536000,
+        body: post-bbbbbbbbbc,
+        Content-Length: 15,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 201,
+        Location: "http://macaroon.zymlinux.net/url-a",
+        Content-Length: 15,
+        Connection: close,
+       body: post-bbbbbbbbbc,
+    }
+}
+#step 4
+--- {
+     Request: {
+        method: GET,
+        uri: '/url-a',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+   ServerCheck: {
+        uri: '/url-a',
+   },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 15,
+        Last-Modified: now - 31536000,
+        Expires: now + 31536000,
+        Connection: close,
+        body: urla-aaaaaaaaab,
+        
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-length: 15,
+        Connection: close,
+        body: urla-aaaaaaaaab,
+    }
+}
+#step 5
+--- {
+     Request: {
+        method: GET,
+        uri: '/url-b',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/url-b',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 15,
+        Last-Modified: now - 31536000,
+        Expires: now + 31536000,
+        Connection: close,
+        body: urlb-bbbbbbbbbq,
+        
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-length: 15,
+        Connection: close,
+        body: urlb-bbbbbbbbbq,
+    }
+}
+
+#step 6
+--- {
+     Request: {
+        method: GET,
+        uri: '/url-b',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+   ServerCheck: {
+        uri: EXCLUDE,
+   },
+   ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 15,
+        Connection: close,
+       body: urlb-bbbbbbbbbq,
+    }
+}
+
+#step 7
+--- {
+     Request: {
+        method: POST,
+        uri: '/posturl',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+        body: request_body-aaaaaaaaab,
+    },
+ ServerCheck: {
+        method: POST,
+        uri: '/posturl',
+        Host: "macaroon.zymlinux.net",
+        Content-Length: 23,
+        body: request_body-aaaaaaaaab,
+     
+   },
+     Response: {
+        protocol: HTTP/1.1,
+        statuscode: 201,
+        Location: "http://macaroon.zymlinux.net/url-c",
+        Connection: close,
+        Last-Modified: now - 31536000,
+        Expires: now + 31536000,
+        body: post-bbbbbbbbbc,
+        Content-Length: 15,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 201,
+        Location: "http://macaroon.zymlinux.net/url-c",
+        Content-Length: 15,
+        Connection: close,
+       body: post-bbbbbbbbbc,
+    }
+}
+#step 8
+--- {
+     Request: {
+        method: GET,
+        uri: '/url-b',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+   ServerCheck: {
+        uri: EXCLUDE,
+   },
+   ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 15,
+        Connection: close,
+       body: urlb-bbbbbbbbbq,
+    }
+}
+

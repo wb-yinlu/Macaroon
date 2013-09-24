@@ -1,0 +1,171 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_Respcc-stale-smaxage=8
+# Case Description: 
+#       Cache MUST revalidate the cached entity whose s-maxage=8
+# Testing Steps: 
+#       step 1: cache something (make true the max-stale works)
+#       step 2: check if it is cached
+#       step 3: sleep for 10sec, and check if it is still cached
+#       step 4: cache something with s-maxage=8
+#       step 5: check whether it is cached
+#       step 6: sleep for 10sec, and request again check whether it will revalidate the entity
+# Author:
+#       zongyi.mqh@taobao.com 
+# -----------------------------------------------
+#
+#step 1: cache something (make true the max-stale works)
+--- {
+     Request: {
+        method: GET,
+        uri: '/Respcc-stale-smaxage=8',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: '/Respcc-stale-smaxage=8',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Cache-Control: max-age=8,
+        Content-Length: 5,
+        Last-Modified: now-31536000,
+        Connection: close,
+        body: yeHTi,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 5,
+        Date: D_Date_Step1,
+        Connection: close,
+        body: yeHTi,
+    }
+}
+
+#step 2: check if it is cached
+--- {
+     Request: {
+        method: GET,
+        uri: '/Respcc-stale-smaxage=8',
+        Cache-Control: max-stale,
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: "exclude",
+    }, 
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 5,
+        Date: D_Date_Step1,
+        Connection: close,
+        body: yeHTi,
+    }
+}
+
+--- {
+    sleep: 10
+}
+
+#step 3: sleep for 10sec, and check if it is still cached
+--- {
+     Request: {
+        method: GET,
+        uri: '/Respcc-stale-smaxage=8',
+        Cache-Control: max-stale,
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: "exclude",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Date: D_Date_Step1,
+        Connection: close,
+        body: yeHTi,
+    }
+}  
+
+#step 4: cache something with s-maxage=8
+--- {
+     Request: {
+        method: GET,
+        uri: '/Respcc-stale-smaxage',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: "/Respcc-stale-smaxage",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Cache-Control: s-maxage = 8,
+        Content-Length: 2,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Connection: close,
+        body: L5,
+
+    },
+    ClientCheck: {
+        statuscode: 200,
+        protocol: HTTP/1.1,
+        content-length: 2,
+        Date: D_Date_Step4,
+        body: L5,
+    }
+}
+
+#step 5: check whether it is cached
+--- {
+     Request: {
+        method: GET,
+        uri: '/Respcc-stale-smaxage',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: "exclude",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 2,
+        Date: D_Date_Step4,
+        body: L5,
+    }
+}  
+
+--- {
+    sleep: 10
+}
+
+# step 6: sleep for 10sec, request again check whether it will revalidate the entity     
+--- {
+     Request: {
+        method: GET,
+        uri: '/Respcc-stale-smaxage',
+        Cache-Control: max-stale,
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: '/Respcc-stale-smaxage',
+        If-Modify-Since: now-31536000,
+    }
+}
+

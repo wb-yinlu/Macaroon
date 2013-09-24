@@ -1,0 +1,70 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_ifMatch-reqUnsupportHost 
+# Case Description:
+#     If-Match ignored unsupported Host(400 status)
+# Testing Steps:
+#     step 1: request with unspported Host, check status
+#     step 2: request with unspported Host and if-match,check status 
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: request with unspported Host, check status
+# servers MUST respond with a 400 status code to 1.1 requests without Host header
+--- {
+     Request: {
+        method: GET,
+        uri: '/ifMatch-reqUnsupportHost',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "exclude",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 400,
+    },
+}
+#Step2: cache something with etag
+--- {
+    Request: {
+        method: GET,
+        uri: '/ifMatch-reqUnsupportHost',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 20,
+        Last-Modified: now-31536000,
+        Connection: close,
+        body: body-onrqprdpkn,
+        Etag: etag-abc,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 20,
+        Last-Modified: now-31536000,
+        Connection: close,
+        body: content-20-123456789,
+        Etag: etag-abc,
+    },
+}
+#Verify If-Match is ignored when no host
+--- {
+     Request: {
+        method: GET,
+        uri: '/ifMatch-reqUnsupportHost',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "exclude",
+        If-Match: etag-abc
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 400,
+    },
+}

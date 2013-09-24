@@ -1,0 +1,125 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_304-update-Expires-with-vary
+# Case Description: 
+#     cache MUST update Expires with Vary header in request headers and responsed 304 with a later values Expires header
+# Testing Steps: 
+#     step 1: caching 
+#     step 2: whether cached
+#     step 3: server check got IMS and response 304 with a later Expires 
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+# step 1
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/url-a',
+        protocol: HTTP/1.1,
+        New-Selector: abc,
+        Host: "macaroon.zymlinux.net",
+        Connection: close,
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/url-a',
+        protocol: HTTP/1.1,
+        New-Selector: abc,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Vary: New-Selector,
+        Last-Modified: now-31536000,
+        Expires: now+86150,
+        ETag: "abcbbc",
+        content-length: 15,
+        Connection: close,
+        body: body-aaaaaaaaaa,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-31536000,
+        Expires: now+86150,
+        Vary: New-Selector,
+        ETag: "abcbbc",
+        content-length: 15,
+        Connection: close,
+        body: body-aaaaaaaaaa,
+    }
+}
+# step 2
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/url-a',
+        protocol: HTTP/1.1,
+        New-Selector: abc,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: EXCLUDE,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-31536000,
+        Expires: now+86150,
+        Vary: New-Selector,
+        ETag: "abcbbc",
+        content-length: 15,
+        Connection: close,
+        body: body-aaaaaaaaaa,
+    }
+}
+# step 3
+
+--- {
+     Request: {
+        method: GET,
+        uri: '/url-a',
+        protocol: HTTP/1.1,
+        New-Selector: bbc,
+        Host: "macaroon.zymlinux.net",
+        Connection: close,
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/url-a',
+        protocol: HTTP/1.1,
+        New-Selector: bbc,
+        If-None-Match: 'abcbbc',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 304,
+        Cache-Control: public,
+        Vary: New-Selector,
+        Last-Modified: now-31536000,
+        Expires: now+86155,
+        ETag: "abcbbc",
+        content-length: 15,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Last-Modified: now-31536000,
+        Expires: now+86155,
+        Vary: New-Selector,
+        ETag: "abcbbc",
+        content-length: 15,
+        Connection: close,
+        body: body-aaaaaaaaaa,
+    }
+}

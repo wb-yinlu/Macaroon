@@ -1,0 +1,68 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_chunked-1p1-cache-chunked.yaml
+# Case Description:
+#       DUT SHOULD cache chunked response with two 100Byte chunks if cache-control header is public
+# Testing Steps:
+#       step 1: cache something
+#       step 2: check whether cached
+# Author: zongyi.mqh@alibaba-inc.com
+# -----------------------------------------------
+# step 1: cache something
+--- {
+    Request: {
+        method: GET,
+        uri: '/chunked-1p1-cache-chunked',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/chunked-1p1-cache-chunked',
+        protocol: HTTP/1.1,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Transfer-Encoding: chunked,
+        Cache-Control: public,
+        Expires: now+31536000,
+        Connection: close,
+        body: "
+        64\r\n
+        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r\n
+        64\r\n
+        aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\r\n
+        0\r\n
+        "
+
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Connection: close,
+        body: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,
+    }
+}
+
+# step 2: check whether cached
+--- {
+    Request: {
+        method: GET,
+        uri: '/chunked-1p1-cache-chunked',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: 'exclude',
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 200,
+        body: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,
+    }
+}

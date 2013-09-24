@@ -1,0 +1,43 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_rmRespTrailer-te-xtrailers
+# Case Description:
+#       DUT MUST remove the trailer entity if TE header is xtrailers
+# Testing Steps:
+#       step 1: check whether DUT removes the trailer entity if TE header is xtrailers
+# Author: qihai.qh@alibaba-inc.com
+# -----------------------------------------------
+# check whether DUT removes the trailer entity if TE header is xtrailers
+--- {
+    Request: {
+        method: GET,
+        uri: '/rmRespTrailer-te-xtrailers',
+        protocol: HTTP/1.0,
+        TE: xtrailers,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/rmRespTrailer-te-xtrailers',
+        protocol: HTTP/1.1,
+        TE: xtrailers,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Trailer: forward,
+        Connection: close,
+        body: bady-trailer
+
+    },
+    ClientCheck: {
+        protocol: HTTP/1.0,
+        statuscode: 200,
+        content-length: 12,
+        Trailer: "exclude",
+        Connection: close,
+        body: bady-trailer,
+    }
+}

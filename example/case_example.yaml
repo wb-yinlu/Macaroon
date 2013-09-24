@@ -1,0 +1,85 @@
+# ------------------------------------------------
+# Case Name:
+#     case_example.yaml
+# Case Description:
+#      Test Example, write test point, test destination, Protocol Base and so on.
+# Testing Steps:
+#      Write each step process and verification point
+#      Step1: send a request and cache something
+# Author:
+#      write your email addr
+#      buke@alibaba-inc.com
+#
+# -----------------------------------------------
+#
+# attempting to cache an entity with an ETag header
+--- {
+     Request: {
+        method: GET,
+        uri: '/hktzxguybhrk',
+        protocol: HTTP/1.1,
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/hktzxguybhrk',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 15,
+        ETag: "foo",
+        Expires: now + 86400,
+        Host: "www.mm.cn",
+        Last-Modified: now - 86400,
+        body: body-pvqmzvmnjw,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Last-modified: now - 86400,
+        Expires: now + 86400,
+        ETag: foo,
+        content-length: 15,
+        body: body-pvqmzvmnjw,
+    }
+}
+#  verifying whether the cache cached the entity
+--- {
+     Request: {
+        method: GET,
+        uri: '/hktzxguybhrk',
+        protocol: HTTP/1.1,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Last-modified: now - 86400,
+        Expires: now + 86400,
+        ETag: foo,
+        content-length: 15,
+        body: body-pvqmzvmnjw,
+    }
+}
+# sending an If-None-Match request where If-Modified-Since is absent
+--- {
+     Request: {
+        method: GET,
+        uri: '/hktzxguybhrk',
+        protocol: HTTP/1.1,
+        Host: "www.mm.cn",
+        If-None-Match: "bar",
+        If-None-Match: "",
+        If-None-Match: "foo",
+        If-None-Match: "baz",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Last-modified: now - 86400,
+        Expires: now + 86400,
+        ETag: foo,
+        content-length: 15,
+        body: body-pvqmzvmnjw,
+    }
+}

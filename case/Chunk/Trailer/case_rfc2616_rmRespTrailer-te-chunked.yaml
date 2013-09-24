@@ -1,0 +1,47 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_rmRespTrailer-te-chunked.yaml
+# Case Description:
+#       DUT MUST remove trailer header entity if TE header is chunked
+# Testing Steps:
+#       step 1: check whether DUT removes trailer header entity if TE header is chunked
+# Author: qihai.qh@alibaba-inc.com
+# -----------------------------------------------
+# check whether DUT removes trailer header entity if TE header is chunked
+--- {
+    Request: {
+        method: GET,
+        uri: '/rmRespTrailer-te-chunked',
+        protocol: HTTP/1.1,
+        TE: chunked,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/rmRespTrailer-te-chunked',
+        protocol: HTTP/1.1,
+        TE: chunked,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Trailer: forward,
+        Transfer-Encoding: chunked,
+        Connection: close,
+        body: "
+        a\r\n
+        1234567890\r\n
+        0\r\n"
+
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 10,
+        Trailer: "exclude",
+        Connection: close,
+        body: 1234567890,
+    }
+}

@@ -1,0 +1,64 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_NoCache-UnKnowSC-390.yaml
+# Case Description:
+#     HTTP Protocol Unknow status code MUST NOT be cached: 290
+# Testing Steps:
+#     Step1:request a url which not on cache and the backend server response 290
+#     Step2:verify the 290 not be cached
+# Author: tutong@taobao.com
+# -----------------------------------------------
+#
+#step 1: request a url which not on cache and the backend server response 290
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_NoCache-UnKnowSC-390',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/case_rfc2616_NoCache-UnKnowSC-390',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 390,
+        Cache-Control: public,
+        content-length: 20,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Connection: close,
+        body: content-20-123456789,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 390,
+        cache-control: public,
+        content-length: 20,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Connection: close,
+        
+    }
+}
+
+#verify the 290 not be cached
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_rfc2616_NoCache-UnKnowSC-390',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/case_rfc2616_NoCache-UnKnowSC-390',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    }
+}

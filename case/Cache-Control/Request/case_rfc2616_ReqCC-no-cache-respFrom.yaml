@@ -1,0 +1,92 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_ReqCC-no-cache-respFrom
+# Case Description: 
+#     Cache MUST not use entity in cache if request with cache-control=no-cache
+# Testing Steps: 
+#     step 1: request a reource 
+#     step 2: check whether the resource be cached
+#     step 3: request with no-cache
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: request a reource
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqCC-no-cache',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: '/ReqCC-no-cache',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 15,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Connection: close,
+        body: Rj48FUgBpPyLi3,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 15,
+        Date: S_Date_Step1,
+        body: Rj48FUgBpPyLi3,
+    }
+}
+
+#step 2: check whether resource be cached
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqCC-no-cache',
+        protocol: HTTP/1.1,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Date: S_Date_Step1,
+        body: "Rj48FUgBpPyLi3",
+    }
+}
+
+#step 3: request with no-cache 
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqCC-no-cache',
+        protocol: HTTP/1.1,
+        Cache-Control: no-cache,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: "/ReqCC-no-cache",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 2,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Connection: close,
+        body: Rj,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 2,
+        Date: S_Date_Step3,
+        body: Rj,
+    }
+
+}
+

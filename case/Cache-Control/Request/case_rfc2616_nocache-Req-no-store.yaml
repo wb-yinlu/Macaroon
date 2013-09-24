@@ -1,0 +1,54 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_nocache-Req-no-store.yaml
+# Case Description:
+#       Cache MUST NOT cache the response if the request is with cache-control: no-store 
+# Testing Steps: 
+#       Step 1: send request with cache-control: no-store
+#       Step 2: check whether the request is cached
+# Author: 
+#       zongyi.mqh@taobao.com
+# -----------------------------------------------
+#
+#step 1: send request with cache-control: no-store
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqPragma-no-store',
+        cache-control: no-store,
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 5,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Connection: close,
+        body: OeKbU,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 5,
+        body: OeKbU,
+    }
+}
+
+#step 2: check whether the request is cached
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqPragma-no-store',
+        protocol: HTTP/1.1,
+        Connection: close,
+    },
+    ServerCheck: {
+        uri: '/ReqPragma-no-store',
+    }
+}

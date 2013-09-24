@@ -1,0 +1,73 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_ifNoneMatch-reqUnsupportExpect
+# Case Description: 
+#     If-None-Match ignored unsupported Expect(417 status)
+# Testing Steps: 
+#     step 1: request with unspported Expect, check status
+#     step 2: cache a object with "etag"
+#     step 3: request with unspported Expect and if-none-match,check status
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: request with unspported Expect, check status
+# proxy MUST respond with 417 (Expectation Failed) if it cannot meet the "expect=params" expectation
+#
+--- {
+     Request: {
+        method: GET,
+        uri: '/ifNoneMatch-417status',
+        protocol: HTTP/1.1,
+        Expect: expect=params,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 417,
+    }
+}
+
+#step 2: cache something with Etag
+
+--- {
+    Request: {
+        method: GET,
+        uri: '/ifNoneMatch-417status',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        Connection: close,
+        Content-Length: 20,
+        body: content-20-123456789,
+        Etag: etag-123456,
+        Cache-Control: max-age=3600,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        body: content-20-123456789,
+        Etag: etag-123456,
+        Content-Length: 20,
+    },
+}
+
+#Step3: DUT should ignore the inm requst header
+--- {
+    Request: {
+        method: GET,
+        uri: '/ifNoneMatch-417status',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Expect: expect=params,
+        If-None-Match: etag-123456,
+        Host: "macaroon.zymlinux.net",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 417,
+    },
+}

@@ -1,0 +1,44 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_resp-chunked-11-incrctClen-toClt
+# Case Description:
+#       DUT MUST handle chunked body with an incorrect Content-Length header response to an HTTP/1.1 client 
+# Testing Steps:
+#       step 1: check whether DUT handles chunked body with an incorrect Content-Length header response to an HTTP/1.1 client 
+# Author: qihai.qh@alibaba-inc.com
+# -----------------------------------------------
+#step 1: check whether DUT handles chunked body with an incorrect Content-Length header response to an HTTP/1.1 client 
+--- {
+    Request: {
+        method: GET,
+        uri: '/resp-chunked-11-incrctClen-toClt',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/resp-chunked-11-incrctClen-toClt',
+        protocol: HTTP/1.1,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 15,
+        Transfer-Encoding: chunked,
+        Connection: close,
+        body: "
+        a\r\n
+        abcdyldibd\r\n
+        0\r\n"
+
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 10,
+        Connection: close,
+        body: abcdyldibd
+    }
+}

@@ -1,0 +1,46 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_POST-chunked_addCL_noTrailer
+# Case Description: 
+#     proxy MUST add Content-Length header to request containing chunked-encoded body without trailer
+# Testing Steps: 
+#
+# Author: tutong@taobao.com
+# -----------------------------------------------
+#
+--- {
+    Request: {
+        method: POST,
+        uri: '/case_rfc2616_POST-chunked_addCL_noTrailer',
+        protocol: HTTP/1.1,
+        Transfer-Encoding: chunked,
+        Host: macaroon.zymlinux.net,
+        Connection: close,
+        body: "
+            14\r\n
+            zsvuoeifghppcczzelpm\r\n
+            14\r\n
+            pxtyyoylejmddjyrnizv\r\n
+            0\r\n
+            \r\n
+            "       
+    },
+    ServerCheck: {
+        method: POST,
+        Content-Length: 40,
+        body:zsvuoeifghppcczzelpmpxtyyoylejmddjyrnizv,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        status: 200,
+        Connection: close,
+        Content-Length: 15,
+        body: 15-1234567890ab,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        status:  200,
+        Content-Length: 15,
+        body: 15-1234567890ab,
+    }
+}

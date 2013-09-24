@@ -1,0 +1,54 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_request-chunked-11b-block-1-announced-trailer
+# Case Description:
+#       DUT MUST handle chunked request with one 11-byte block and with 1 announced header in the trailer
+# Testing Steps:
+#       step 1: check whether DUT handles chunked request with one 11-byte block and with 1 announced header in the trailer
+# Author: zongyi.mqh@taobao.com
+# -----------------------------------------------
+# check whether DUT handles chunked request with one 11-byte block and with 1 announced header in the trailer
+--- {
+    Request: {
+        method: POST,
+        uri: '/rqst-chunked-11-trailer-11-1-announced',
+        protocol: HTTP/1.1,
+        Transfer-Encoding: chunked,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+        body: "
+        b\r\n
+        11111111111\r\n
+        0\r\n
+        Cache-Control: x-maxage=100\r\n"
+
+    },
+    ServerCheck: {
+        method: POST,
+        uri: '/rqst-chunked-11-trailer-11-1-announced',
+        protocol: HTTP/1.1,
+        Content-Length: 11,
+        Transfer-Encoding: chunked,
+        Host: "macaroon.zymlinux.net",
+        body: "
+        b\r\n
+        11111111111\r\n
+        0\r\n
+        Cache-Control: x-maxage=100\r\n"
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 5,
+        Connection: close,
+        body: 12345
+
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 5,
+        Connection: close,
+        body: 12345
+    }
+}

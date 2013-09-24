@@ -1,0 +1,74 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_ifMatch-reqUnsupportExpect
+# Case Description:
+#     If-Match ignored unsupported Expect(417 status)
+# Testing Steps: 
+#     step 1: request with unspported Expect, check status
+#     step 2: request with unspported Expect and if-match,check status
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: request with unspported Expect, check status
+# proxy MUST respond with 417 (Expectation Failed) if it cannot meet the
+# "expect=params" expectation
+#
+--- {
+     Request: {
+        method: GET,
+        uri: '/ifNoneMatch-reqUnsupportExpect',
+        protocol: HTTP/1.1,
+        Expect: expect=params,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 417,
+    }
+}
+--- {
+     Request: {
+        method: GET,
+        uri: '/ifNoneMatch-reqUnsupportExpect',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 20,
+        Last-Modified: now-31536000,
+        Connection: close,
+        body: content-20-123456789,
+        Etag: tag-abc,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 20,
+        Last-Modified: now-31536000,
+        Connection: close,
+        body: content-20-123456789,
+        Etag: tag-abc,
+    },
+}
+
+#Step3:verify
+--- {
+     Request: {
+        method: GET,
+        uri: '/ifNoneMatch-reqUnsupportExpect',
+        protocol: HTTP/1.1,
+        Expect: expect=params,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+        If-Match: tag-abc,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 417,
+    }
+}
