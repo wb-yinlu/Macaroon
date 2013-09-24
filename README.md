@@ -5,7 +5,9 @@ Macaroon
 
 ##安装及使用
 ###社区公共测试平台地址：
-	http://XXXX(环境已经搭建完成)
+	目前公共测试环境已经搭建配置完成，请联系宗仪（QQ：624740707）或怀财（QQ：262765996）添加用户权限；
+	登录qa1机器：ssh -l your-user-name -p 22292 zymlinux, /home/Macaroon安装有Macaroon；
+	登录qa2机器：ssh -l your-user-name -p 22293 zymlinux，安装有ts、squid等方向代理软件；
 
 ###自行安装及使用：  
   
