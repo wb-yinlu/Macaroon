@@ -64,6 +64,12 @@
 		},
 		Request: {
 		},
+		ServerCheck: {
+		},
+		Response: {
+		},
+		ClientCheck: {
+		},
 		...
                 }
 
