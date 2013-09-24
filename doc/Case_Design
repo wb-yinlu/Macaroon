@@ -83,9 +83,8 @@
 	      protocol： HTTP协议版本，默认HTTP/1.1
 	      uri：请求uri
 	      statuscode：返回状态码，缺省值为200
-	      body:
-	      body-length:
-	      Real-Cache:
+	      body: 报文正文内容
+
 	ii. value
             value是对应key在rfc2616中的规定值，macaroon提供如下特殊value
 	    a. 正则表达式
