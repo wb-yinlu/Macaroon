@@ -108,6 +108,9 @@ class HTTPRequestHandlerMock(BaseHTTPRequestHandler):
         self.end_headers()
         if chunked:
             chk_data = self.user_defined_body.rstrip('\r\n').split('\r\n')
+            print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+            print chk_data
+            print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
             for i in range((len(chk_data) -1)/2):
                 self.wfile.write(chk_data[2*i] + '\r\n' + chk_data[2*i+1]+'\r\n')
                 self.wfile.flush()
@@ -267,7 +270,8 @@ def testserver(port):
     from httpmockclient import HTTPHeaders as hh
 
     helpc = UserDataHelper()
-    ip = socket.gethostbyname(socket.getfqdn())
+    #ip = socket.gethostbyname(socket.getfqdn())
+    ip = "192.168.56.93"
     server = ThreadedHTTPServerMock((ip, port), helpc.serverhandler)
     httpd = threading.Thread(target=server.serve_forever)
     httpd.start()
@@ -291,5 +295,5 @@ def testserver(port):
 if __name__ == '__main__':
     import time
 
-    testserver(8192)
+    testserver(80)
     time.sleep(1000)

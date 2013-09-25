@@ -1,0 +1,133 @@
+一. case文件采用.yaml方式编写，并遵循yaml基本语法及格式
+	参见example/example.yaml
+	相关语法wiki：http://zh.wikipedia.org/zh-cn/YAML
+
+
+二. 名词解释
+    1. 什么是step
+       i. step在测试例中指client端发起一次请求，到client端收到一次response的过程。如下图1, 2所示:
+         图1
+          Client              DUT(Proxy/cache)            Server
+            |                      |(miss)                  |
+     Request|--------------------->|                        |
+            |                      |----------------------->|ServerCheck
+            |                      |<-----------------------|Response
+ ClientCheck|<---------------------|                        |
+
+         图2
+         Client               DUT(Proxy/cache)            Server
+            |                      |(hit)                   |
+     Request|--------------------->|                        |
+            |                      |                        |
+            |                      |                        |
+ ClientCheck|<---------------------|                        |
+
+
+       ii. case文件中，step是以"--- {"开头，"}"结尾的数据块。形如:
+        --- {
+            ...
+            }
+        --- {
+            ...
+            }
+
+       iii. 一个case文件可包含多个step，但至少应包含一个step，多个step按顺序执行
+
+
+    2. 关键字(大小写不敏感) 
+        i. 普通关键字 
+	   普通关键字由以下4个数据段标识表示:
+            a. Request 表示由client发起的请求
+            b. ServerCheck 表示需要在Origin Server端做的check
+            c. Response 表示需要由Ogrigin Server端回复给client的response
+            d. ClientCheck 表示需要在client做的数据check
+        ii. 特殊关键字 
+            a. 特殊关键字sleep, 一般用于两个2个step之间，用于指示case执行过程中这两步之间需要停顿的时间(单位：秒)
+            # step1
+            --- {
+                ...
+                }
+            --- {
+                 sleep: 10
+                }
+            # step2
+            --- {
+                ...
+                }
+            b. 特殊关键字config，一般位于一个step内，且置于Request关键字之前，表示在该step执行前，对被测软件进行配置更新或环境准备，目前仅支持shell
+	    # step
+            --- {
+                Config: {
+		  sh: “your shell command”,
+		  sh: "your shell command",
+		  ...
+		},
+		Request: {
+		},
+		ServerCheck: {
+		},
+		Response: {
+		},
+		ClientCheck: {
+		},
+		...
+                }
+
+    3. 普通关键字填写
+        段名: name = Request|ServerCheck|Response|ClientCheck
+        段格式:
+            name: {
+                 key: value,
+                 ...,
+                 key: "value1, value2",
+            },
+	i. key
+           a. 标准key
+	      key包含rfc2616规定的所有标准Header和response的关键字，value是相对应的rfc2616规定的值
+	   b. macaroon自定义key
+	      method: 指http请求方法，默认为GET
+	      protocol： HTTP协议版本，默认HTTP/1.1
+	      uri：请求uri
+	      statuscode：返回状态码，缺省值为200
+	      body: 报文正文内容
+
+	ii. value
+            value是对应key在rfc2616中的规定值，macaroon提供如下特殊value
+	    a. 正则表达式
+		1) 对整数类型值的检查支持如下类型操作符和正则表达式
+            	   >|>=|<|<=|!=|<>
+                   例如：
+                   statuscode: 304 必须等于304
+                   statuscode: <=304 不大于304
+                   statuscode: !=304 不等于304
+                   statuscode: <>304 不等于304
+
+		2) 字符串类型值的检查支持正则表达式
+                   例如：
+                   Referer: r"alibaba-inc.com"  包含字符串“alibaba-inc.com”
+            b. macaroon自定义关键字
+		1）now
+		   时间相关entry如Expires，Last-modified，有两种表述方式
+            	   1) 段后设置hardcode绝对时间
+               	      例如：
+                      Last-Modified: "Wed, 19 Jun 2013 07:51:06 GMT"
+                   2) 使用macaroon自定义now关键字，表示case执行的当前时间
+               	      如需使用之后或者之前的某个时间, 使用+ seconds, -seconds来实现
+                      例如：
+                      Last-modified: now - 86400，
+                2）exclude
+		   显示表明希望删除header头部中的某个字段（一般用于异常测试需求）
+		   例如：Date:"exclude",
+		   表明希望在头部中删除该字段。一般情况下，如果不填写，框架将使用默认赋值而非删除该字段.
+		3) S_Date_StepN, D_Date_StepN
+		
+      4. body的内容比较 
+		对body内容的比较, 采用md5值校验
+
+      5. host域说明  
+		在config.py中通过_host指定host默认值, 当case文件中使用host关键字重新配置时，优先使用case中的值.
+		host可以赋值为域名或IP，如：host: www.test.cn; host:192.168.2.3
+		如需要指定端口，如为www.test.cn指定访问端口8192, 可采用两种方式处理:
+                a. 在proxy的相关配置文件中配置转发规则, 如trafficserver在remap.config中配置
+                b. proxy的配置不做任何改变,直接在yaml中给出,如host: www.test.cn:8192
+

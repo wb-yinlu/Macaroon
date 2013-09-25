@@ -74,17 +74,19 @@ def renameDupliName(fname, keys_l, desc):
             if len(t) == 1:
                 continue
             global keys_in_yaml
-            if keys.has_key(t[0]):
-                n = renameKey(t[0], keys)
-                keys[n] = t[0]
+            if keys.has_key(t[0].lower()):
+                n = renameKey(t[0].lower(), keys)
+                keys[n] = t[0].lower()
                 keys_in_yaml.append(n.lower())
                 keys_l.append((n.lower(), t[0].lower()))
                 lines.pop()
                 lines.append(l.replace(t[0], n, 1))
             else:
-                keys[t[0]] = t[0]
+                keys[t[0].lower()] = t[0]
                 keys_in_yaml.append(t[0].lower())
                 keys_l.append((t[0].lower(), t[0].lower()))
+                lines.pop()
+                lines.append(l.replace(t[0], t[0].lower(), 1))
             if keys_in_yaml[-1].lower().startswith('sleep'):
                 if lines[-2].startswith('--- {'):
                     keys_in_yaml.pop()
@@ -103,7 +105,7 @@ def processChunkedBody(lines):
         if lines[i].strip().startswith('body'):
             c = i
             while True:
-                if lines[c].strip().endswith('",') or lines[c].strip().endswith("',"):
+                if lines[c].strip().endswith(','):
                     new_lines.append(c)
                     break
                 else:
@@ -114,9 +116,13 @@ def processChunkedBody(lines):
         i += 1
         if i == len(lines):
             break
+    global keys_in_yaml
     for i in new_lines:
         tmp = lines.pop(i)
-        lines.insert(i, tmp.strip())
+        k = tmp.strip().split(':', 1)[0].lower()
+        if (keys_in_yaml.count(k) > 0) and (not k.startswith('body')):
+            keys_in_yaml.remove(k)
+        lines.insert(i, tmp.strip().lower())
     return lines
 
 def processCommaInVal(lines):
@@ -225,7 +231,7 @@ def convertDictToTuple(d):
             v = d[k]
         except:
             raise  YamlParseError("Sections' order may be incorrect, please check the file!")
-        if k.lower().startswith('body') and v.endswith('0\r\n'):
+        if k.lower().startswith('body') and str(v).endswith('0\r\n'):
             tmp.append((k, v+'\r\n'))
         else:
             tmp.append((k, v))

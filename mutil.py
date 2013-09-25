@@ -129,7 +129,7 @@ def getLocalIP():
     """
     lip = socket.gethostbyname(socket.getfqdn())
     logging.info('getLocalIP: ' + lip)
-    return socket.gethostbyname(socket.getfqdn())
+    return "192.168.56.93"
 
 def getGmtNow(inteval=0):
     """
@@ -290,7 +290,7 @@ def startMockServer(port):
     """ init mock server and return UserDataHelper()"""
 
     helper = httpmockserver.UserDataHelper()
-    ip = getLocalIP()
+    ip ="192.168.56.92"
     global server
     global httpd_G
     server = httpmockserver.ThreadedHTTPServerMock((ip, port), helper.serverhandler)
