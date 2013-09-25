@@ -129,7 +129,7 @@
         Content-MD5: PFe5r28u0GHL4DACIind8g==,
         Content-Length: 20,
         body: content-20-123456789,
-    }
+    },
     ClientCheck: {
         protocol: HTTP/1.1,
         statuscode: 200,

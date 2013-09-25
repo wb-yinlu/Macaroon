@@ -24,7 +24,7 @@
     },
     ServerCheck: {
         method: POST,
-        uri: '/rqst-chunked-rqst-11-1B',
+        uri: '/rqst-chunked-1B-block',
         protocol: HTTP/1.1,
         content-length: 1,
         Transfer-Encoding: chunked,

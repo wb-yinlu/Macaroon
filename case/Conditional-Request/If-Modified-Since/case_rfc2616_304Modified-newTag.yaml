@@ -109,7 +109,6 @@
         Expires: now+31536000,
         ETag: W/"tag-old",
         content-length: 15,
-        Age: >0,
         Connection: close,
         body: aHri5vEn7ecP4JK,
     }
@@ -168,7 +167,7 @@
     ClientCheck: {
         protocol: HTTP/1.1,
         statuscode: 200,
-        Date: != S_Date_Step5,
+        Date: "!= S_Date_Step5",
         ETag: W/"tag-new",
     }
 }    

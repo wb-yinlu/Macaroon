@@ -1,4 +1,4 @@
- ------------------------------------------------
+# ------------------------------------------------
 # Case Name:
 #       case_rfc2616_vary_Mismatch-asterisk-vary.yaml
 # Case Description:
@@ -37,7 +37,7 @@
         Expires: now+31536000,
         Vary: X-a,
         Vary: X-b,
-        vary: *,
+        vary: "*",
         Connection: close,
         body: body-jtbvqqnlaq,
     },
@@ -50,7 +50,7 @@
         Expires: now+31536000,
         Vary: X-a,
         Vary: X-b,
-        vary: *,
+        vary: '*',
         Connection: close,
         body: body-jtbvqqnlaq,
     }
