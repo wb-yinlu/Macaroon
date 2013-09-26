@@ -122,7 +122,7 @@ def processChunkedBody(lines):
         k = tmp.strip().split(':', 1)[0].lower()
         if (keys_in_yaml.count(k) > 0) and (not k.startswith('body')):
             keys_in_yaml.remove(k)
-        lines.insert(i, tmp.strip().lower())
+        lines.insert(i, tmp.strip())
     return lines
 
 def processCommaInVal(lines):
