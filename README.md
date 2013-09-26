@@ -60,7 +60,7 @@ Macaroon
 ##如何运行用例
    i. 运行单个case   
 
-     在根目录下执行如下命令: sh runcase.sh <case文件   
+     在根目录下执行如下命令: sh runcase.sh case文件   
    ii. 运行多个case   
   
 	在根目录下执行如下命令：python runner.py -p your-case-path -s your-email    
