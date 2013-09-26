@@ -777,7 +777,6 @@ def clientCheck(helpc, response, clientcheck):
         print('|-Real Response:')
         print iprotocol, status, reason
         printHeader(retheader)
-        print
 
     if 'protocol' in keys:
         protocol = getHeaderValues('protocol', clientcheck)[0]
@@ -799,6 +798,12 @@ def clientCheck(helpc, response, clientcheck):
         """
     except hc.IncompleteRead as e:
         body =  e.partial
+    
+    #Log: print body
+    if len(body) <= 2048:
+        print body
+        print
+
     
     #Variable support: $real_response $response_body
     #$real_response = {'body':'abc', protocol:'HTTP/1.1', statuscode:200, reason: 'OK', date:'xxx'}...
@@ -839,18 +844,27 @@ def clientCheck(helpc, response, clientcheck):
         i = 0
         while i < len(all_sh):
             current_sh = all_sh[i]
-            current_sh = current_sh.replace('$real_response', str(real_response))
-            current_sh = current_sh.replace('$response_body', response_body)
+            i = i + 1
+            current_sh = current_sh.replace('$real_response', '"'+str(real_response)+'"')
+            current_sh = current_sh.replace('$response_body', '"'+response_body+'"')
+            #print current_sh
             result = agentserver.execmd(current_sh)
+            #print result
             #the result should be jason format data [0, Success message] or [1,'Fail message']
-            print result
-            is_success = result[0]
-            if is_success == 0:
-                pass
+            if result.find('[') >=0 and result.find(']') >= 0:
+                left = result.index('[')
+                right = result.index(']')
+                result = result[left:right+1]
+                result = eval(result)
+                is_success = result[0]
+                if is_success == 0:
+                    pass
+                else:
+                    msg = result[1]
+                    raise CheckResponseError(msg)
             else:
-                msg = result[1]
+                msg = 'result format error ' + result
                 raise CheckResponseError(msg)
-
 
     checkHeader(clientcheck, retheader)
 

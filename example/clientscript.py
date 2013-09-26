@@ -24,7 +24,7 @@ if __name__ == "__main__":
     
     msg = None
     
-    if real_response.find(expectbody) >=0 :
+    if real_response.find(expectbody) >=0:
         pass
     else:
         msg = "body unmatch"
@@ -38,7 +38,7 @@ if __name__ == "__main__":
         result.append(1)
         result.append(msg)
 
-    sys.stdout.write(result)
+    sys.stdout.write(str(result))
 
     exit(0)
 
