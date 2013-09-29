@@ -1,0 +1,157 @@
+# ------------------------------------------------
+# Case Name:
+#      DType
+# Case Description:
+#      D rule param,D1 match domain subdomain,sub(subdomain),D2 match hostname only 
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: D1 match domain ,403 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /DType,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /DType,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 1 a.ts.com;D 2 b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 2: D1 match subdomain ,403 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /DType,
+        protocol: HTTP/1.1,
+        referer: 'http://gls.a.ts.com',
+    },
+    ServerCheck: {
+        uri: /DType,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 1 a.ts.com;D 2 b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 3: D1 match sub(subdomain) ,403 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /DType,
+        protocol: HTTP/1.1,
+        referer: 'http://sdf.gls.a.ts.com',
+    },
+    ServerCheck: {
+        uri: /DType,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 1 a.ts.com;D 2 b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 4: D1 match updomain ,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /DType,
+        protocol: HTTP/1.1,
+        referer: 'http://ts.com',
+    },
+    ServerCheck: {
+        uri: /DType,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 1 a.ts.com;D 2 b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 5: D2 match hostname ,403 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /DType,
+        protocol: HTTP/1.1,
+        referer: 'http://b.ts.com',
+    },
+    ServerCheck: {
+        uri: /DType,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 1 a.ts.com;D 2 b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 6: D2 match sub-hostname ,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /DType,
+        protocol: HTTP/1.1,
+        referer: 'http://sdf.b.ts.com',
+    },
+    ServerCheck: {
+        uri: /DType,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 1 a.ts.com;D 2 b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}

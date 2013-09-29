@@ -1,0 +1,157 @@
+# ------------------------------------------------
+# Case Name:
+#      AType
+# Case Description:
+#      A rule param,A1 match domain subdomain,sub(subdomain),A2 match hostname only 
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: A1 match domain ,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /AType,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /AType,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;A 2 b.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 2: A1 match subdomain ,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /AType,
+        protocol: HTTP/1.1,
+        referer: 'http://gls.a.ts.com',
+    },
+    ServerCheck: {
+        uri: /AType,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;A 2 b.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 3: A1 match sub(subdomain) ,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /AType,
+        protocol: HTTP/1.1,
+        referer: 'http://sdf.gls.a.ts.com',
+    },
+    ServerCheck: {
+        uri: /AType,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;A 2 b.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 4: A1 match updomain ,403 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /AType,
+        protocol: HTTP/1.1,
+        referer: 'http://ts.com',
+    },
+    ServerCheck: {
+        uri: /AType,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;A 2 b.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 5: A2 match hostname ,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /AType,
+        protocol: HTTP/1.1,
+        referer: 'http://b.ts.com',
+    },
+    ServerCheck: {
+        uri: /AType,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;A 2 b.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 6: A2 match sub-hostname ,403 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /AType,
+        protocol: HTTP/1.1,
+        referer: 'http://asd.b.ts.com',
+    },
+    ServerCheck: {
+        uri: /AType,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;A 2 b.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}

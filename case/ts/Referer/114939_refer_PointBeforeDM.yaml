@@ -1,0 +1,107 @@
+# ------------------------------------------------
+# Case Name:
+#      PointBeforeDM
+# Case Description:
+#      point with dm, port as part of the domain 
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: domain match 
+--- {
+
+    Request: {
+        method: GET,
+        uri: /PointBeforeDM,
+        protocol: HTTP/1.1,
+        referer: 'http://.a.ts.com',
+    },
+    ServerCheck: {
+        uri: /PointBeforeDM,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 .a.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 2: subdomain match
+--- {
+
+    Request: {
+        method: GET,
+        uri: /PointBeforeDM,
+        protocol: HTTP/1.1,
+        referer: 'http://www.a.ts.com',
+    },
+    ServerCheck: {
+        uri: /PointBeforeDM,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 .a.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 3: domain remove point not match
+--- {
+
+    Request: {
+        method: GET,
+        uri: /PointBeforeDM,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /PointBeforeDM,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 .a.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 4: others,not match 
+--- {
+
+    Request: {
+        method: GET,
+        uri: /PointBeforeDM,
+        protocol: HTTP/1.1,
+        referer: 'http://www.b.ts.com',
+    },
+    ServerCheck: {
+        uri: /PointBeforeDM,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 .a.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}

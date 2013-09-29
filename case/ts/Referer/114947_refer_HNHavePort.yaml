@@ -1,0 +1,82 @@
+# ------------------------------------------------
+# Case Name:
+#      HNHavePort
+# Case Description:
+#      hostname with port,not effect to match 
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1:refer uri no port 
+--- {
+
+    Request: {
+        method: GET,
+        uri: /HNHavePort,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /HNHavePort,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: 'A 2 a.ts.com;D *', 
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 2: refer uri with port
+--- {
+
+    Request: {
+        method: GET,
+        uri: /HNHavePort,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com:8080',
+    },
+    ServerCheck: {
+        uri: /HNHavePort,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: 'A 2 a.ts.com;D *', 
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 3: others
+--- {
+
+    Request: {
+        method: GET,
+        uri: /HNHavePort,
+        protocol: HTTP/1.1,
+        referer: 'http://b.ts.com',
+    },
+    ServerCheck: {
+        uri: /HNHavePort,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: 'A 2 a.ts.com;D *', 
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}

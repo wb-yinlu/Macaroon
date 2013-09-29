@@ -1,0 +1,107 @@
+# ------------------------------------------------
+# Case Name:
+#      D1DM_Aall
+# Case Description:
+#      D1 domain and subdomain 403, updomain and others 200 
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: domain match d1,403
+--- {
+
+    Request: {
+        method: GET,
+        uri: /D1DM_Aall,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /D1DM_Aall,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 1 a.ts.com;A *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 2: subdomain match d1,403
+--- {
+
+    Request: {
+        method: GET,
+        uri: /D1DM_Aall,
+        protocol: HTTP/1.1,
+        referer: 'http://gos.a.ts.com',
+    },
+    ServerCheck: {
+        uri: /D1DM_Aall,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 1 a.ts.com;A *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 3: updomain no match d1,200
+--- {
+
+    Request: {
+        method: GET,
+        uri: /D1DM_Aall,
+        protocol: HTTP/1.1,
+        referer: 'http://ts.com',
+    },
+    ServerCheck: {
+        uri: /D1DM_Aall,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 1 a.ts.com;A *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 4: others,200
+--- {
+
+    Request: {
+        method: GET,
+        uri: /D1DM_Aall,
+        protocol: HTTP/1.1,
+        referer: 'http://c.ts.com',
+    },
+    ServerCheck: {
+        uri: /D1DM_Aall,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 1 a.ts.com;A *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}

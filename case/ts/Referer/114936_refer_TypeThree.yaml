@@ -1,0 +1,32 @@
+# ------------------------------------------------
+# Case Name:
+#      TypeThree
+# Case Description:
+#      type not 1 or 2,ignore
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: A type equle 3,ignore
+--- {
+
+    Request: {
+        method: GET,
+        uri: /TypeThree,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /TypeThree,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 3 a.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}

@@ -1,0 +1,69 @@
+# ------------------------------------------------
+# Case Name:
+#      InCche_ReqDenyRule
+# Case Description:
+#      resouce in cache,request deny refer, request 403 from TS 
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: cache a refer request
+--- {
+
+    Request: {
+        method: GET,
+        uri: /InCche_ReqDenyRule,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /InCche_ReqDenyRule,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: 'A 2 a.ts.com;D *', 
+        Cache-Control: s-maxage=100,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        Cache-Control: s-maxage=100,
+        statuscode: 200,
+    }
+}
+#step 2: identify whether cached
+--- {
+
+    Request: {
+        method: GET,
+        uri: /InCche_ReqDenyRule,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: EXCLUDE,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        Cache-Control: s-maxage=100,
+        statuscode: 200,
+    }
+}
+#step 3: request deny refer ,response from ts 403
+--- {
+
+    Request: {
+        method: GET,
+        uri: /InCche_ReqDenyRule,
+        referer: 'http://b.ts.com',
+        protocol: HTTP/1.1,
+    },
+    ServerCheck: {
+        uri: EXCLUDE,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}

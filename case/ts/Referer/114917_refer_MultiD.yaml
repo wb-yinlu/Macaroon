@@ -1,0 +1,132 @@
+# ------------------------------------------------
+# Case Name:
+#      MultiD
+# Case Description:
+#      muti D rule, many match 
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: one match D rule ,403
+--- {
+
+    Request: {
+        method: GET,
+        uri: /MultiD,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /MultiD,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 1 a.ts.com;D 2 b.ts.com;D 2 c.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 2: one subdomain match D rule ,403
+--- {
+
+    Request: {
+        method: GET,
+        uri: /MultiD,
+        protocol: HTTP/1.1,
+        referer: 'http://gjs.a.ts.com',
+    },
+    ServerCheck: {
+        uri: /MultiD,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 1 a.ts.com;D 2 b.ts.com;D 2 c.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 3: one updomain not match D rule ,200
+--- {
+
+    Request: {
+        method: GET,
+        uri: /MultiD,
+        protocol: HTTP/1.1,
+        referer: 'http://ts.com',
+    },
+    ServerCheck: {
+        uri: /MultiD,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 1 a.ts.com;D 2 b.ts.com;D 2 c.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 4: one hostname match D rule ,403
+--- {
+
+    Request: {
+        method: GET,
+        uri: /MultiD,
+        protocol: HTTP/1.1,
+        referer: 'http://b.ts.com',
+    },
+    ServerCheck: {
+        uri: /MultiD,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 1 a.ts.com;D 2 b.ts.com;D 2 c.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 5: others,200
+--- {
+
+    Request: {
+        method: GET,
+        uri: /MultiD,
+        protocol: HTTP/1.1,
+        referer: 'http://d.ts.com',
+    },
+    ServerCheck: {
+        uri: /MultiD,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 1 a.ts.com;D 2 b.ts.com;D 2 c.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}

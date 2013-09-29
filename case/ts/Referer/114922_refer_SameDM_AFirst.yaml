@@ -1,0 +1,107 @@
+# ------------------------------------------------
+# Case Name:
+#      SameDM_AFirst
+# Case Description:
+#      A and D rule same,A first,A effect,D ignore
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: domain match same rule ,200
+--- {
+
+    Request: {
+        method: GET,
+        uri: /SameDM_AFirst,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /SameDM_AFirst,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;D 1 a.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 2: subdomain match same rule ,200
+--- {
+
+    Request: {
+        method: GET,
+        uri: /SameDM_AFirst,
+        protocol: HTTP/1.1,
+        referer: 'http://djs.a.ts.com',
+    },
+    ServerCheck: {
+        uri: /SameDM_AFirst,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;D 1 a.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 3: updomain match same rule ,403
+--- {
+
+    Request: {
+        method: GET,
+        uri: /SameDM_AFirst,
+        protocol: HTTP/1.1,
+        referer: 'http://ts.com',
+    },
+    ServerCheck: {
+        uri: /SameDM_AFirst,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;D 1 a.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 4: others,403
+--- {
+
+    Request: {
+        method: GET,
+        uri: /SameDM_AFirst,
+        protocol: HTTP/1.1,
+        referer: 'http://d.ts.com',
+    },
+    ServerCheck: {
+        uri: /SameDM_AFirst,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;D 1 a.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}

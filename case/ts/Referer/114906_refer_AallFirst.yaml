@@ -1,0 +1,59 @@
+# ------------------------------------------------
+# Case Name:
+#      AallFirst
+# Case Description:
+#      A * fist, all request allow
+# Author: wb-yinlu@ts.com
+# -----------------------------------------------
+#step 1: A * fist, A1 domian allow
+--- {
+
+    Request: {
+        method: GET,
+        uri: '/AallFirst',
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: '/AallFirst',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: A *;A 1 a.ts.com;D 2 b.ts.com;D *,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+
+#step 2: A * fist, A2 hostname allow
+--- {
+
+    Request: {
+        method: GET,
+        uri: '/AallFirst',
+        protocol: HTTP/1.1,
+        referer: 'http://b.ts.com',
+    },
+    ServerCheck: {
+        uri: '/AallFirst',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: A *;A 1 a.ts.com;D 2 b.ts.com;D *,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+

@@ -1,0 +1,59 @@
+# ------------------------------------------------
+# Case Name:
+#      DallFirst
+# Case Description:
+#      D * fist, all request deny
+# Author: wb-yinlu@ts.com
+# -----------------------------------------------
+#step 1: D * fist, A1 domian deny
+--- {
+
+    Request: {
+        method: GET,
+        uri: '/DallFirst',
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: '/DallFirst',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: D *;A 1 a.ts.com;D 2 b.ts.com;A *,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+
+#step 2: D * fist, A2 hostname deny
+--- {
+
+    Request: {
+        method: GET,
+        uri: '/DallFirst',
+        protocol: HTTP/1.1,
+        referer: 'http://b.ts.com',
+    },
+    ServerCheck: {
+        uri: '/DallFirst',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: D *;A 1 a.ts.com;D 2 b.ts.com;A *,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+

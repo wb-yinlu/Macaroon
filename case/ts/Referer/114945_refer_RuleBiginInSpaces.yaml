@@ -1,0 +1,82 @@
+# ------------------------------------------------
+# Case Name:
+#      RuleBiginInSpaces
+# Case Description:
+#      rule begin in blank,blank ignore
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: rule c.ts.com  begin in blank,blank ignore
+--- {
+
+    Request: {
+        method: GET,
+        uri: /RuleBiginInSpaces,
+        protocol: HTTP/1.1,
+        referer: 'http://c.ts.com',
+    },
+    ServerCheck: {
+        uri: /RuleBiginInSpaces,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: 'A 2 a.ts.com;A 2 b.ts.com, c.ts.com; D *', 
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 2: rule D *  begin in blank,blank ignore
+--- {
+
+    Request: {
+        method: GET,
+        uri: /RuleBiginInSpaces,
+        protocol: HTTP/1.1,
+        referer: 'http://d.ts.com',
+    },
+    ServerCheck: {
+        uri: /RuleBiginInSpaces,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: 'A 2 a.ts.com;A 2 b.ts.com, c.ts.com; D *', 
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 3: rule A 2 b.ts.com no blank ,right
+--- {
+
+    Request: {
+        method: GET,
+        uri: /RuleBiginInSpaces,
+        protocol: HTTP/1.1,
+        referer: 'http://b.ts.com',
+    },
+    ServerCheck: {
+        uri: /RuleBiginInSpaces,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: 'A 2 a.ts.com;A 2 b.ts.com, c.ts.com; D *', 
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}

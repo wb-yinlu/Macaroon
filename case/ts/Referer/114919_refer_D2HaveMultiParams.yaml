@@ -1,0 +1,182 @@
+# ------------------------------------------------
+# Case Name:
+#      D2HaveMultiParams
+# Case Description:
+#      D2 have muti params,one of them match,deny 403,no match 200
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: hostname match one of D2 rules,403 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /D2HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /D2HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 2 a.ts.com,b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 2: subhostname match one of D2 rules,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /D2HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://sod.a.ts.com',
+    },
+    ServerCheck: {
+        uri: /D2HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 2 a.ts.com,b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 3: uphostname match one of D2 rules,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /D2HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://ts.com',
+    },
+    ServerCheck: {
+        uri: /D2HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 2 a.ts.com,b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 4: hostname match the other of D2 rules,403 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /D2HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://b.ts.com',
+    },
+    ServerCheck: {
+        uri: /D2HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 2 a.ts.com,b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 5: subhostname match the other of D2 rules,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /D2HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://iog.b.ts.com',
+    },
+    ServerCheck: {
+        uri: /D2HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 2 a.ts.com,b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 6: uphostname match the other of D2 rules,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /D2HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://com',
+    },
+    ServerCheck: {
+        uri: /D2HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 2 a.ts.com,b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 7: not match D2 rules,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /D2HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://c.ts.com',
+    },
+    ServerCheck: {
+        uri: /D2HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 2 a.ts.com,b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}

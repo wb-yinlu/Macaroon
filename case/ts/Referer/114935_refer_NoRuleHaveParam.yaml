@@ -1,0 +1,32 @@
+# ------------------------------------------------
+# Case Name:
+#      NoRuleHaveParam
+# Case Description:
+#      no rule(A,D),have param
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: param without rule,ignore
+--- {
+
+    Request: {
+        method: GET,
+        uri: /NoRuleHaveParam,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /NoRuleHaveParam,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: 1 a.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}

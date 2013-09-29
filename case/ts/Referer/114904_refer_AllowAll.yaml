@@ -1,0 +1,32 @@
+# ------------------------------------------------
+# Case Name:
+#      AllowAll
+# Case Description:
+#      allow all 
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: refer random domain ,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /AllowAll,
+        protocol: HTTP/1.1,
+        referer: 'http://a.taobao.com',
+    },
+    ServerCheck: {
+        uri: /AllowAll,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: A *,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}

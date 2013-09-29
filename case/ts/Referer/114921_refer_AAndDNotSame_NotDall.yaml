@@ -1,0 +1,182 @@
+# ------------------------------------------------
+# Case Name:
+#      AAndDNotSame_NotDall
+# Case Description:
+#      A and D rule not same without D*,match D deny 403 ,others allow 200
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: domain match A1 rules,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /AAndDNotSame_NotDall,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /AAndDNotSame_NotDall,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;D 1 b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 2: subdomain match A1 rules,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /AAndDNotSame_NotDall,
+        protocol: HTTP/1.1,
+        referer: 'http://sod.a.ts.com',
+    },
+    ServerCheck: {
+        uri: /AAndDNotSame_NotDall,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;D 1 b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 3: subdomain of subdomain match A1 rules,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /AAndDNotSame_NotDall,
+        protocol: HTTP/1.1,
+        referer: 'http://111.sod.a.ts.com',
+    },
+    ServerCheck: {
+        uri: /AAndDNotSame_NotDall,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;D 1 b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 4: updomain match one of A1 rules,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /AAndDNotSame_NotDall,
+        protocol: HTTP/1.1,
+        referer: 'http://ts.com',
+    },
+    ServerCheck: {
+        uri: /AAndDNotSame_NotDall,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;D 1 b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 5: domain match D1 rules,403 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /AAndDNotSame_NotDall,
+        protocol: HTTP/1.1,
+        referer: 'http://b.ts.com',
+    },
+    ServerCheck: {
+        uri: /AAndDNotSame_NotDall,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;D 1 b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 6: subdomain match D1 rules,403 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /AAndDNotSame_NotDall,
+        protocol: HTTP/1.1,
+        referer: 'http://iog.b.ts.com',
+    },
+    ServerCheck: {
+        uri: /AAndDNotSame_NotDall,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;D 1 b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 7: not match any,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /AAndDNotSame_NotDall,
+        protocol: HTTP/1.1,
+        referer: 'http://c.ts.com',
+    },
+    ServerCheck: {
+        uri: /AAndDNotSame_NotDall,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;D 1 b.ts.com,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}

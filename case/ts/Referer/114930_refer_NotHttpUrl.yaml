@@ -1,0 +1,133 @@
+# ------------------------------------------------
+# Case Name:
+#      NotHttpUrl
+# Case Description:
+#      Refer value not http or https, deny 403
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: refer value http 200
+--- {
+
+    Request: {
+        method: GET,
+        uri: /NotHttpUrl,
+        protocol: HTTP/1.1,
+        referer: 'http://sd.ts.com',
+    },
+    ServerCheck: {
+        uri: /NotHttpUrl,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 2: refer value https 200
+--- {
+
+    Request: {
+        method: GET,
+        uri: /NotHttpUrl,
+        protocol: HTTP/1.1,
+        referer: 'https://sd.ts.com',
+    },
+    ServerCheck: {
+        uri: /NotHttpUrl,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 3: refer value ftp 403
+--- {
+
+    Request: {
+        method: GET,
+        uri: /NotHttpUrl,
+        protocol: HTTP/1.1,
+        referer: 'ftp://sd.ts.com',
+    },
+    ServerCheck: {
+        uri: /NotHttpUrl,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 4: refer value not have prot,403
+--- {
+
+    Request: {
+        method: GET,
+        uri: /NotHttpUrl,
+        protocol: HTTP/1.1,
+        referer: 'sd.ts.com',
+    },
+    ServerCheck: {
+        uri: /NotHttpUrl,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+
+#step 5: refer value prot err,403
+--- {
+
+    Request: {
+        method: GET,
+        uri: /NotHttpUrl,
+        protocol: HTTP/1.1,
+        referer: 'http:sd.ts.com',
+    },
+    ServerCheck: {
+        uri: /NotHttpUrl,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}

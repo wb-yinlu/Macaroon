@@ -1,0 +1,57 @@
+# ------------------------------------------------
+# Case Name:
+#      FirstRuleRightSecondWrong
+# Case Description:
+#      first rule right,rule effect;second wrong,ignore
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: A rule right,effect
+--- {
+
+    Request: {
+        method: GET,
+        uri: /FirstRuleRightSecondWrong,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /FirstRuleRightSecondWrong,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;A b.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 2: D rule wrong,ignore
+--- {
+
+    Request: {
+        method: GET,
+        uri: /FirstRuleRightSecondWrong,
+        protocol: HTTP/1.1,
+        referer: 'http://b.ts.com',
+    },
+    ServerCheck: {
+        uri: /FirstRuleRightSecondWrong,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;A b.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}

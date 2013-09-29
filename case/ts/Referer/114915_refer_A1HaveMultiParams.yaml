@@ -1,0 +1,182 @@
+# ------------------------------------------------
+# Case Name:
+#      A1HaveMultiParams
+# Case Description:
+#      A1 with muti params,if match one of them,allow 200
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: domain match one of A1 params ,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /A1HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /A1HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com,b.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 2: subdomain match one of A1 params ,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /A1HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://ofe.a.ts.com',
+    },
+    ServerCheck: {
+        uri: /A1HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com,b.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 3: updomian match one of A1 params ,403 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /A1HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://ts.com',
+    },
+    ServerCheck: {
+        uri: /A1HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com,b.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 4: domain match the other of A1 params ,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /A1HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://b.ts.com',
+    },
+    ServerCheck: {
+        uri: /A1HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com,b.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 5: subdomain match the other of A1 params ,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /A1HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://gsd.b.ts.com',
+    },
+    ServerCheck: {
+        uri: /A1HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com,b.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 6: updomain match the other of A1 params ,403 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /A1HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://ts.com',
+    },
+    ServerCheck: {
+        uri: /A1HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com,b.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 7: not match any ,403 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /A1HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://c.ts.com',
+    },
+    ServerCheck: {
+        uri: /A1HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com,b.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}

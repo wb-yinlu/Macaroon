@@ -1,0 +1,32 @@
+# ------------------------------------------------
+# Case Name:
+#      NoParamHaveRule
+# Case Description:
+#      A 1 no value,ignore
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: refer value domain too long,200 
+--- {
+
+    Request: {
+        method: GET,
+        uri: /NoParamHaveRule,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /NoParamHaveRule,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 ;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}

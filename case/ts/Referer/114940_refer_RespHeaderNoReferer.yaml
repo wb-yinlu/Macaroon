@@ -1,0 +1,31 @@
+# ------------------------------------------------
+# Case Name:
+#      RespHeaderNoReferer
+# Case Description:
+#      os response no acl-refer header ,equals to no refer limit 
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: response no acl-refer ,all allow ,no deny limit
+--- {
+
+    Request: {
+        method: GET,
+        uri: /RespHeaderNoReferer,
+        protocol: HTTP/1.1,
+        referer: 'http://any.ts.com',
+    },
+    ServerCheck: {
+        uri: /RespHeaderNoReferer,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}

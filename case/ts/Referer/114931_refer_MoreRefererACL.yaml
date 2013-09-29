@@ -1,0 +1,33 @@
+# ------------------------------------------------
+# Case Name:
+#      MoreRefererACL
+# Case Description:
+#      more referer acl header ,only first effective
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1:first X-Referer-ACL effective
+--- {
+
+    Request: {
+        method: GET,
+        uri: /MoreRefererACL,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /MoreRefererACL,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 1 a.ts.com,
+        X-Referer-ACL: A 1 a.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}

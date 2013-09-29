@@ -1,0 +1,82 @@
+# ------------------------------------------------
+# Case Name:
+#      A2HN_Dall
+# Case Description:
+#      A2 domain return 200, subdomain and others 403 
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: domain match A2,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /A2HN_Dall,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /A2HN_Dall,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: A 2 a.ts.com;D **,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 2: subdomain not match A2,403 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /A2HN_Dall,
+        protocol: HTTP/1.1,
+        referer: 'http://dfs.a.ts.com',
+    },
+    ServerCheck: {
+        uri: /A2HN_Dall,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: A 2 a.ts.com;D **,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 3: not match A2,403 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /A2HN_Dall,
+        protocol: HTTP/1.1,
+        referer: 'http://c.ts.com',
+    },
+    ServerCheck: {
+        uri: /A2HN_Dall,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: A 2 a.ts.com;D **,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}

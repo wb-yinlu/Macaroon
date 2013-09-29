@@ -1,0 +1,32 @@
+# ------------------------------------------------
+# Case Name:
+#      ReqHeaderNoneReferer
+# Case Description:
+#      Request header none refer value,no refer,200 return
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: requet header no refer ,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /ReqHeaderNoneReferer,
+        protocol: HTTP/1.1,
+        referer: '',
+    },
+    ServerCheck: {
+        uri: /ReqHeaderNoneReferer,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 1 a.ts.com;D 2 b.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}

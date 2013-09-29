@@ -1,0 +1,32 @@
+# ------------------------------------------------
+# Case Name:
+#      DenyAll
+# Case Description:
+#      deny all 
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: refer random domain ,404 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /DenyAll,
+        protocol: HTTP/1.1,
+        referer: 'http://a.taobao.com',
+    },
+    ServerCheck: {
+        uri: '/DenyAll',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: D *,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}

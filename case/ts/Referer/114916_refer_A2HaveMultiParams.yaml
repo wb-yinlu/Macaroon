@@ -1,0 +1,182 @@
+# ------------------------------------------------
+# Case Name:
+#      A2HaveMultiParams
+# Case Description:
+#      A2 with muti params,if match one of them,allow 200
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: hostname match one of A2 params ,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /A2HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /A2HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 2 a.ts.com,b.ts.com,c.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 2: subdomain match one of A2 params ,403 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /A2HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://ofe.a.ts.com',
+    },
+    ServerCheck: {
+        uri: /A2HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 2 a.ts.com,b.ts.com,c.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 3: updomian match one of A2 params ,403 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /A2HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://ts.com',
+    },
+    ServerCheck: {
+        uri: /A2HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 2 a.ts.com,b.ts.com,c.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 4: hostname match the other of A2 params ,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /A2HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://b.ts.com',
+    },
+    ServerCheck: {
+        uri: /A2HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 2 a.ts.com,b.ts.com,c.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 5: subdomain match the other of A2 params ,200 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /A2HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://gsd.b.ts.com',
+    },
+    ServerCheck: {
+        uri: /A2HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 2 a.ts.com,b.ts.com,c.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 6: updomain match the other of A2 params ,403 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /A2HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://ts.com',
+    },
+    ServerCheck: {
+        uri: /A2HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 2 a.ts.com,b.ts.com,c.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 7: not match any ,403 return
+--- {
+
+    Request: {
+        method: GET,
+        uri: /A2HaveMultiParams,
+        protocol: HTTP/1.1,
+        referer: 'http://d.ts.com',
+    },
+    ServerCheck: {
+        uri: /A2HaveMultiParams,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: A 2 a.ts.com,b.ts.com,c.ts.com;D *,
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}

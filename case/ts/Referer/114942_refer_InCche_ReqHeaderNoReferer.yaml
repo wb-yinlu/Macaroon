@@ -1,0 +1,68 @@
+# ------------------------------------------------
+# Case Name:
+#      InCche_ReqHeaderNoReferer
+# Case Description:
+#      refer request cached;make an unrefer request, response in cache
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: cache a refer request
+--- {
+
+    Request: {
+        method: GET,
+        uri: /InCche_ReqHeaderNoReferer,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /InCche_ReqHeaderNoReferer,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: 'A 2 a.ts.com;D *', 
+        Cache-Control: s-maxage=100,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        Cache-Control: s-maxage=100,
+        statuscode: 200,
+    }
+}
+#step 2: identify whether cached
+--- {
+
+    Request: {
+        method: GET,
+        uri: /InCche_ReqHeaderNoReferer,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: EXCLUDE,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        Cache-Control: s-maxage=100,
+        statuscode: 200,
+    }
+}
+#step 3: request unrefer ,response from cache
+--- {
+
+    Request: {
+        method: GET,
+        uri: /InCche_ReqHeaderNoReferer,
+        protocol: HTTP/1.1,
+    },
+    ServerCheck: {
+        uri: EXCLUDE,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}

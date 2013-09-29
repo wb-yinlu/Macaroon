@@ -1,0 +1,57 @@
+# ------------------------------------------------
+# Case Name:
+#      CaseInsensitive
+# Case Description:
+#      Case insensitive
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: domain case insensitive
+--- {
+
+    Request: {
+        method: GET,
+        uri: /CaseInsensitive,
+        protocol: HTTP/1.1,
+        referer: 'http://asd.a.ts.com',
+    },
+    ServerCheck: {
+        uri: /CaseInsensitive,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 1 A.ts.COM;D *',
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}
+#step 2: hostname case insensitive
+--- {
+
+    Request: {
+        method: GET,
+        uri: /CaseInsensitive,
+        protocol: HTTP/1.1,
+        referer: 'http://b.ts.com',
+    },
+    ServerCheck: {
+        uri: /CaseInsensitive,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        X-Referer-ACL: D 2 B.ts.COM;D *',
+        content-length: 11,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+    }
+}

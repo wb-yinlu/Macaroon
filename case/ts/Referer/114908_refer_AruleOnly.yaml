@@ -1,0 +1,82 @@
+# ------------------------------------------------
+# Case Name:
+#      AruleOnly
+# Case Description:
+#      only A rule,all allow 
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: any refer  return 200
+--- {
+
+    Request: {
+        method: GET,
+        uri: /AruleOnly,
+        protocol: HTTP/1.1,
+        referer: 'http://a.ts.com',
+    },
+    ServerCheck: {
+        uri: /AruleOnly,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: A 2 a.ts.com;A 1 b.ts.com,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 2: any refer  return 200
+--- {
+
+    Request: {
+        method: GET,
+        uri: /AruleOnly,
+        protocol: HTTP/1.1,
+        referer: 'http://b.ts.com',
+    },
+    ServerCheck: {
+        uri: /AruleOnly,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: A 2 a.ts.com;A 1 b.ts.com,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
+#step 3: any refer  return 200
+--- {
+
+    Request: {
+        method: GET,
+        uri: /AruleOnly,
+        protocol: HTTP/1.1,
+        referer: 'http://c.ts.com',
+    },
+    ServerCheck: {
+        uri: /AruleOnly,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 11,
+        X-Referer-ACL: A 2 a.ts.com;A 1 b.ts.com,
+        body: Hello World,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+    }
+}
