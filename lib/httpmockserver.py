@@ -108,14 +108,13 @@ class HTTPRequestHandlerMock(BaseHTTPRequestHandler):
         self.end_headers()
         if chunked:
             chk_data = self.user_defined_body.rstrip('\r\n').split('\r\n')
-            print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-            print chk_data
-            print ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-            for i in range((len(chk_data) -1)/2):
+            idx = chk_data.index('0')
+            for i in range(idx/2):
                 self.wfile.write(chk_data[2*i] + '\r\n' + chk_data[2*i+1]+'\r\n')
                 self.wfile.flush()
                 time.sleep(.1)
             self.wfile.write('0\r\n\r\n')
+            self.wfile.write('\r\n'.join(chk_data[idx+1:]))
         else:
             self.wfile.write(self.user_defined_body)
         self.wfile.flush()    
@@ -178,11 +177,13 @@ def mock_GET(self):
     self.end_headers()
     if chunked:
         chk_data = self.user_defined_body.rstrip('\r\n').split('\r\n')
-        for i in range((len(chk_data) -1)/2):
+        idx = chk_data.index('0')
+        for i in range(idx/2):
             self.wfile.write(chk_data[2*i] + '\r\n' + chk_data[2*i+1]+'\r\n')
             self.wfile.flush()
             time.sleep(.1)
         self.wfile.write('0\r\n\r\n')
+        self.wfile.write('\r\n'.join(chk_data[idx+1:]))
     else:
         self.wfile.write(self.user_defined_body)
     self.wfile.flush()    
@@ -270,8 +271,7 @@ def testserver(port):
     from httpmockclient import HTTPHeaders as hh
 
     helpc = UserDataHelper()
-    #ip = socket.gethostbyname(socket.getfqdn())
-    ip = "192.168.56.93"
+    ip = socket.gethostbyname(socket.getfqdn())
     server = ThreadedHTTPServerMock((ip, port), helpc.serverhandler)
     httpd = threading.Thread(target=server.serve_forever)
     httpd.start()
@@ -295,5 +295,5 @@ def testserver(port):
 if __name__ == '__main__':
     import time
 
-    testserver(80)
+    testserver(8192)
     time.sleep(1000)
