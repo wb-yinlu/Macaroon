@@ -31,6 +31,7 @@ import httpmockserver
 import httpmockclient as hc
 import contentfilter
 import datetime
+import agentserver
 
 __all__ = ['getGmtNow', 'getLocalIP', 'md5sum', 'getRandomUri', 'CaseError', 'YamlParseError']
 
@@ -98,6 +99,7 @@ def date_time_string(v, now):
     delta = datetime.timedelta(seconds = eval(delta_s))
     tm = (now + delta).strftime('%a, %d %b %Y %H:%M:%S GMT')
     return tm
+
 def myPrint(color, msg):
     """
     color print method
@@ -129,7 +131,7 @@ def getLocalIP():
     """
     lip = socket.gethostbyname(socket.getfqdn())
     logging.info('getLocalIP: ' + lip)
-    return "192.168.56.93"
+    return lip
 
 def getGmtNow(inteval=0):
     """
@@ -168,6 +170,33 @@ def datetime2Timestamp(dt):
 def fail(msg=None):
     """Fail immediately, with the giv"""
     raise failureException(msg)
+
+def parseBodyLine(bodyline):
+    ''' 
+    parse body cmd line: file(filename='123.txt')
+    in client check
+    '''
+    import re
+
+    pattern = re.compile('file(.*)', re.IGNORECASE)
+    match = pattern.search(bodyline)
+    if match == None:
+        return -1
+
+    bodyconf = {}
+    bodyline = bodyline.strip()
+    bodyline = bodyline.replace('file(', '')
+    bodyline = bodyline.replace(')', '')
+    bodyline = bodyline.replace("'", '')
+    bodyline = bodyline.replace('"', '')
+    for keyword in bodyline.split(','):
+        key = keyword.split('=')[0]
+        value = keyword.split('=')[1]
+        key = key.strip()
+        value = value.strip()
+        bodyconf.setdefault(key, value)
+
+    return bodyconf
 
 def md5sum(fd=None, str=None, url=None):
     """
@@ -290,7 +319,7 @@ def startMockServer(port):
     """ init mock server and return UserDataHelper()"""
 
     helper = httpmockserver.UserDataHelper()
-    ip ="192.168.56.92"
+    ip = getLocalIP()
     global server
     global httpd_G
     server = httpmockserver.ThreadedHTTPServerMock((ip, port), helper.serverhandler)
@@ -748,7 +777,6 @@ def clientCheck(helpc, response, clientcheck):
         print('|-Real Response:')
         print iprotocol, status, reason
         printHeader(retheader)
-        print
 
     if 'protocol' in keys:
         protocol = getHeaderValues('protocol', clientcheck)[0]
@@ -760,20 +788,83 @@ def clientCheck(helpc, response, clientcheck):
         removeItem('statuscode', clientcheck)
         response.checkstatuscode(str(statuscode))
 
+    #Begin to process body here
+    try:
+        body = response.read()
+        """
+        savebody = open(sys.argv[0]+'.body', 'wb')
+        savebody.write(body)
+        savebody.close()
+        """
+    except hc.IncompleteRead as e:
+        body =  e.partial
+    
+    #Log: print body
+    if len(body) <= 2048:
+        print body
+        print
+
+    
+    #Variable support: $real_response $response_body
+    #$real_response = {'body':'abc', protocol:'HTTP/1.1', statuscode:200, reason: 'OK', date:'xxx'}...
+    real_response = retheader
+    real_response.append(('version', version))
+    real_response.append(('status', status))
+    real_response.append(('reason', reason))
+    real_response.append(('body', body))
+    
+    #$response_body = $body
+    response_body = body
     if 'body' in keys:
         ibody = getHeaderValues('body', clientcheck)[0]
         removeItem('body', clientcheck)
-        try:
-            body = response.read()
-            """
-            savebody = open(sys.argv[0]+'.body', 'wb')
-            savebody.write(body)
-            savebody.close()
-            """
-        except hc.IncompleteRead as e:
-            body =  e.partial
+        
+        #expect body is regex, use regex compare with real response body
+        if isRaw(ibody):
+            if reCompare(body, ibody):
+                pass
+            else:
+                msg = "expect body: " + ibody + " real response body: " + body
+                raise CheckResponseError(msg)
+        #read expect body from file when the body is large
+        elif parseBodyLine(ibody) != -1:
+            bodyconf = parseBodyLine(ibody)
+            bkeys = bodyconf.keys()
+            if 'filename' in bkeys:
+                filename = bodyconf.get('filename')
+                ibody = contentfilter.file_read(filename)
+                response.checkbodyhexmd5(ibody,body)
+        #expect body is complete
+        else:
+            response.checkbodyhexmd5(ibody,body)
 
-        response.checkbodyhexmd5(ibody, body)
+    if 'sh' in keys:
+        all_sh = getHeaderValues('sh', clientcheck)
+        removeItem('sh', clientcheck)
+        i = 0
+        while i < len(all_sh):
+            current_sh = all_sh[i]
+            i = i + 1
+            current_sh = current_sh.replace('$real_response', '"'+str(real_response)+'"')
+            current_sh = current_sh.replace('$response_body', '"'+response_body+'"')
+            #print current_sh
+            result = agentserver.execmd(current_sh)
+            #print result
+            #the result should be jason format data [0, Success message] or [1,'Fail message']
+            if result.find('[') >=0 and result.find(']') >= 0:
+                left = result.index('[')
+                right = result.index(']')
+                result = result[left:right+1]
+                result = eval(result)
+                is_success = result[0]
+                if is_success == 0:
+                    pass
+                else:
+                    msg = result[1]
+                    raise CheckResponseError(msg)
+            else:
+                msg = 'result format error ' + result
+                raise CheckResponseError(msg)
 
     checkHeader(clientcheck, retheader)
 
@@ -800,6 +891,17 @@ class CheckHeaderError(failureException):
     """
     Raise this exception when header compare failed in clientcheck or
     servercheck
+    """
+    def __init__(self, msg):
+        if not msg:
+            msg = repr(msg)
+        self.args = msg,
+        self.msg = msg
+    pass
+
+class CheckResponseError(failureException):
+    """
+    raise this exception when body compare failed in clientcheck or servercheck
     """
     def __init__(self, msg):
         if not msg:

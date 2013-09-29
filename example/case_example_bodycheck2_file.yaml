@@ -1,0 +1,63 @@
+# ------------------------------------------------
+# Case Name:
+#      case_example_bodycheck2.yaml
+# Case Description:
+#      Test Example, write test point, test destination, Protocol Base and so on.
+# Testing Steps:
+#      Write each step process and verification point
+#      Step1: send a request and cache something
+#      Step2: verify cache something
+#      case2: body check value is "file(filename=expectbody-1.txt)"
+# Author:
+#      write your email addr
+#      buke@alibaba-inc.com
+#
+# -----------------------------------------------
+#
+# attempting to cache an entity with an ETag header
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_example_bodycheck2',
+        protocol: HTTP/1.1,
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/case_example_bodycheck2',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 20,
+        Expires: now + 86400,
+        Host: "www.mm.cn",
+        Last-Modified: now - 86400,
+        body: content-20-123456789,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Last-modified: now - 86400,
+        Expires: now + 86400,
+        content-length: 20,
+        body: "file(filename=/home/buke/python/Macaroon/example/expectbody-1.txt)",
+    }
+}
+#  verifying whether the cache cached the entity
+#  case2: body check value is "file(filename=expectbody-1.txt)"
+--- {
+     Request: {
+        method: GET,
+        uri: '/case_example_bodycheck2',
+        protocol: HTTP/1.1,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Last-modified: now - 86400,
+        Expires: now + 86400,
+        content-length: 20,
+        body: "file(filename=/home/buke/python/Macaroon/example/expectbody-1.txt)",
+    }
+}
