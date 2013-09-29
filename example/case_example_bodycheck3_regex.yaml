@@ -1,15 +1,12 @@
 # ------------------------------------------------
 # Case Name:
-#      case_example_bodycheck3.yaml
+#       case_example_bodycheck3_regex.yaml
 # Case Description:
-#      Test Example, write test point, test destination, Protocol Base and so on.
+#       You can check the body content using regex string.
 # Testing Steps:
-#      Write each step process and verification point
-#      Step1: send a request and cache something
+#       Step1: send a request and cache something
 # Author:
-#      write your email addr
-#      buke@alibaba-inc.com
-#
+#       buke@alibaba-inc.com
 # -----------------------------------------------
 #
 # attempting to cache an entity with an ETag header
@@ -29,7 +26,7 @@
         Cache-Control: public,
         Content-Length: 20,
         Expires: now + 86400,
-        Host: "www.mm.cn",
+        Host: "macaroon.zymlinux.net",
         Last-Modified: now - 86400,
         body: content-20-123456789,
     },
@@ -39,23 +36,6 @@
         Last-modified: now - 86400,
         Expires: now + 86400,
         content-length: 20,
-        body: r"123",
-    }
-}
-#  verifying whether the cache cached the entity
-#  case1: body check value is "complete body"
---- {
-     Request: {
-        method: GET,
-        uri: '/case_example_bodycheck3',
-        protocol: HTTP/1.1,
-    },
-    ClientCheck: {
-        protocol: HTTP/1.1,
-        statuscode: 200,
-        Last-modified: now - 86400,
-        Expires: now + 86400,
-        content-length: 20,
-        body: r"456",
+        body: r"123*",
     }
 }

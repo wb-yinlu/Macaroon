@@ -1,20 +1,16 @@
 # ------------------------------------------------
 # Case Name:
-#      case_example_bodycheck2.yaml
+#       case_example_bodycheck2.yaml
 # Case Description:
-#      Test Example, write test point, test destination, Protocol Base and so on.
+#       You can check the body content using file style.
 # Testing Steps:
-#      Write each step process and verification point
-#      Step1: send a request and cache something
-#      Step2: verify cache something
-#      case2: body check value is "file(filename=expectbody-1.txt)"
+#       Step1: send a request and cache something
+#       Step2: verify cache something
+#       case2: body check value is "file(filename=expectbody-1.txt)"
 # Author:
-#      write your email addr
-#      buke@alibaba-inc.com
-#
+#       buke@alibaba-inc.com
 # -----------------------------------------------
 #
-# attempting to cache an entity with an ETag header
 --- {
      Request: {
         method: GET,

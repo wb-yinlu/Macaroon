@@ -1,21 +1,22 @@
 # ------------------------------------------------
 # Case Name:
-#     case_example.yaml
+#       case_example_config.yaml
 # Case Description:
-#      Test Example, write test point, test destination, Protocol Base and so on.
+#       You could add and run any .sh scripts before your ever step.
 # Testing Steps:
-#      Write each step process and verification point
-#      Step1: send a request and cache something
+#       step 1: attempting to cache an entity with an ETag header
+#       step 2: verifying whether the cache cached the entity
+#       step 3: sending an If-None-Match request where If-Modified-Since is absent 
 # Author:
-#      write your email addr
 #      buke@alibaba-inc.com
 #
 # -----------------------------------------------
 #
-# attempting to cache an entity with an ETag header
+#step 1: attempting to cache an entity with an ETag header
 --- {
     Config: {
-        sh: 'pwd',
+        sh: "echo 'set the config file before step 1'",
+        sh: "echo 'you can also run some .sh scripts here'",
         sh: 'ls -a',
     },
     Request: {
@@ -48,9 +49,12 @@
         body: body-pvqmzvmnjw,
     }
 }
-#  verifying whether the cache cached the entity
+#step 2: verifying whether the cache cached the entity
 --- {
-     Request: {
+    Config: {
+        sh: "echo 'set the config file before step 2'",
+    },
+    Request: {
         method: GET,
         uri: '/hktzxguybhrk',
         protocol: HTTP/1.1,
@@ -65,9 +69,12 @@
         body: body-pvqmzvmnjw,
     }
 }
-# sending an If-None-Match request where If-Modified-Since is absent
+#step 3: sending an If-None-Match request where If-Modified-Since is absent
 --- {
-     Request: {
+    Config: {
+        sh: "echo 'set the config file before step 3'",
+    }, 
+    Request: {
         method: GET,
         uri: '/hktzxguybhrk',
         protocol: HTTP/1.1,

@@ -1,18 +1,19 @@
 # ------------------------------------------------
 # Case Name:
-#      case_example_bodycheck1.yaml
+#       case_example_bodycheck1.yaml
 # Case Description:
-#      Test Example, write test point, test destination, Protocol Base and so on.
+#       You can check the body content using complete string.
 # Testing Steps:
-#      Write each step process and verification point
-#      Step1: send a request and cache something
+#       Write each step process and verification point
+#       Step1: send a request and cache something
 # Author:
-#      write your email addr
-#      buke@alibaba-inc.com
+#       write your email addr
+#       buke@alibaba-inc.com
 #
 # -----------------------------------------------
 #
-# attempting to cache an entity with an ETag header
+#step 1: send a request and cache something
+#body check value is "complete body"
 --- {
      Request: {
         method: GET,
@@ -32,23 +33,6 @@
         Host: "www.mm.cn",
         Last-Modified: now - 86400,
         body: content-20-123456789,
-    },
-    ClientCheck: {
-        protocol: HTTP/1.1,
-        statuscode: 200,
-        Last-modified: now - 86400,
-        Expires: now + 86400,
-        content-length: 20,
-        body: content-20-123456789,
-    }
-}
-#  verifying whether the cache cached the entity
-#  case1: body check value is "complete body"
---- {
-     Request: {
-        method: GET,
-        uri: '/case_example_bodycheck1',
-        protocol: HTTP/1.1,
     },
     ClientCheck: {
         protocol: HTTP/1.1,
