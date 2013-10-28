@@ -1,0 +1,30 @@
+# ------------------------------------------------
+# Case Name:
+#      RequestFobiddenFile
+# Case Description:
+#      403 combo 
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: server response 403 ,combo request 
+--- {
+
+    Request: {
+        method: GET,
+        uri: '/??a.js',
+        protocol: HTTP/1.1,
+    },
+    ServerCheck: {
+        uri: '/a.js',
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 403,
+        Cache-Control: public,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 400,
+    }
+}

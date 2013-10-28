@@ -1,0 +1,55 @@
+# ------------------------------------------------
+# Case Name:
+#       RequestOneFile
+# Case Description: 
+#       Request one file 
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: attempting to cache something
+--- {
+
+    Request: {
+        method: GET,
+        uri: '/??a.js',
+        protocol: HTTP/1.1,
+    },
+    ServerCheck: {
+        uri: '/a.js',
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        content-length: 20,
+        body: FvpkKXh2r8fWeYCiLAm5,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        body: FvpkKXh2r8fWeYCiLAm5,
+    }
+}
+
+--- {
+    sleep: 15,
+}
+#step 2: identify cached
+--- {
+
+    Request: {
+        method: GET,
+        uri: '/??a.js',
+        protocol: HTTP/1.1,
+    },
+    ServerCheck: {
+        uri: EXCLUDE,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        age: ">=15",
+        body: FvpkKXh2r8fWeYCiLAm5,
+    }
+}

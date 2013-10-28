@@ -1,0 +1,109 @@
+# ------------------------------------------------
+# Case Name:
+#      ComboSeveralFiles 
+# Case Description:
+#      combo serveral files,some file include dir
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: attempting to cache something
+--- {
+
+    Request: {
+        method: GET,
+        uri: '/??a.js,b.css,dir/c.html',
+        protocol: HTTP/1.1,
+    },
+    ServerCheck: {
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,max-age=30,
+        content-length: 20,
+        body: HMXJefA3kmKQagOz2FbI,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: EXCLUDE,
+        Transfer-Encoding: chunked,
+        body: HMXJefA3kmKQagOz2FbIHMXJefA3kmKQagOz2FbIHMXJefA3kmKQagOz2FbI,
+    }
+}
+#step 2: identify whether cached
+--- {
+
+    Request: {
+        method: GET,
+        uri: '/??a.js,b.css,dir/c.html',
+        protocol: HTTP/1.1,
+    },
+    ServerCheck: {
+        uri: EXCLUDE,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 60,
+        body: HMXJefA3kmKQagOz2FbIHMXJefA3kmKQagOz2FbIHMXJefA3kmKQagOz2FbI,
+    }
+}
+#step 3: identify a.js cached
+--- {
+
+    Request: {
+        method: GET,
+        uri: '/a.js',
+        protocol: HTTP/1.1,
+    },
+    ServerCheck: {
+        uri: EXCLUDE,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 20,
+        Cache-Control: public,max-age=30,
+        body: HMXJefA3kmKQagOz2FbI,
+    }
+}
+#step 4: identify b.cc cached
+--- {
+
+    Request: {
+        method: GET,
+        uri: '/b.css',
+        protocol: HTTP/1.1,
+    },
+    ServerCheck: {
+        uri: EXCLUDE,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 20,
+        Cache-Control: public,max-age=30,
+        body: HMXJefA3kmKQagOz2FbI,
+    }
+}
+#step 5: identify dir/c.html cached
+--- {
+
+    Request: {
+        method: GET,
+        uri: '/dir/c.html',
+        protocol: HTTP/1.1,
+    },
+    ServerCheck: {
+        uri: EXCLUDE,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 20,
+        Cache-Control: public,max-age=30,
+        body: HMXJefA3kmKQagOz2FbI,
+    }
+}

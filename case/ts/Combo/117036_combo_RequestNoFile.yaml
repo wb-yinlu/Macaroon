@@ -1,0 +1,62 @@
+# ------------------------------------------------
+# Case Name:
+#      RequestNoFile
+# Case Description:
+#      combo no file
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: attempting to cache combo
+--- {
+
+    Request: {
+        method: GET,
+        uri: '/??',
+        protocol: HTTP/1.1,
+    },
+    ServerCheck: {
+        uri: '/??',
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 20,
+        Cache-Control: public,max-age=100,
+        body: W2Y4TPGzFeJxbCcUkrKi,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 20,
+        body: W2Y4TPGzFeJxbCcUkrKi,
+    }
+}
+
+#step 2: identify whether cached
+--- {
+
+    Request: {
+        method: GET,
+        uri: '/??',
+        protocol: HTTP/1.1,
+    },
+    ServerCheck: {
+        uri: EXCLUDE,
+        protocol: EXCLUDE,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 20,
+        body: A2Y4TPGzFeJxbCcUkrKi,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Date: S_Date_Step1,
+        content-length: 20,
+        body: W2Y4TPGzFeJxbCcUkrKi,
+    }   
+} 

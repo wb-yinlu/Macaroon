@@ -1,0 +1,61 @@
+# ------------------------------------------------
+# Case Name:
+#      FilenameWithPram     
+# Case Description:
+#      uri with param ?t=20100520 ,go back to resource
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: attempting to cache something
+--- {
+
+    Request: {
+        method: GET,
+        uri: '/??a.js,b.js',
+        protocol: HTTP/1.1,
+    },
+    ServerCheck: {
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        content-length: 20,
+        body: FmEeQX12lSRvJt46DN79,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: EXCLUDE,
+        Transfer-Encoding: chunked,
+        body: FmEeQX12lSRvJt46DN79FmEeQX12lSRvJt46DN79,
+    }
+}
+#step 2: identify go back to resource
+--- {
+
+    Request: {
+        method: GET,
+        uri: '/??a.js,b.js?t=20100520',
+        protocol: HTTP/1.1,
+    },
+    ServerCheck: {
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        content-length: 20,
+        body: hjzoTtisaCAEbyBI8516,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: EXCLUDE,
+        Transfer-Encoding: chunked,
+        body: hjzoTtisaCAEbyBI8516hjzoTtisaCAEbyBI8516,
+    }
+}

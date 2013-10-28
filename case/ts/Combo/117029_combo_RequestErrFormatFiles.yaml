@@ -1,0 +1,33 @@
+# ------------------------------------------------
+# Case Name:
+#       RequestErrFormatFiles  
+# Case Description: 
+#       err combo format
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: attempting to cache something
+--- {
+
+    Request: {
+        method: GET,
+        uri: '/?a.js',
+        protocol: HTTP/1.1,
+    },
+    ServerCheck: {
+        uri: '/?a.js',
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        content-length: 20,
+        body: HtTgAwsPafhI6MGzcxSe,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        body: HtTgAwsPafhI6MGzcxSe,
+    }
+}
