@@ -1,0 +1,54 @@
+# ------------------------------------------------
+# Case Name:
+#     pragma-resp-withSeveralTokens 
+# Case Description: 
+#     paragma response with serverl tokens ,can be through
+# Testing Steps: 
+#     step 1: make a response that response header with 2 pragma tokens
+#     step 2: identify whether cached this response
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: make a response that response header with 2 pragma tokens
+--- {
+     Request: {
+        method: GET,
+        uri: '/pragma-resp-withSeveralTokens',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Pragma: "no-cache",
+        Pragma: "abc",
+        Content-Length: 21,
+        Connection: close,
+        body: This body for pragama,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 21,
+        body: This body for pragama,
+    }
+}
+
+
+#step 2: identify whether not cached this response
+--- {
+     Request: {
+        method: GET,
+        uri: '/pragma-resp-withSeveralTokens',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        protocol: HTTP/1.1,
+        uri: '/pragma-resp-withSeveralTokens',
+        Host: "macaroon.zymlinux.net",
+    },
+}

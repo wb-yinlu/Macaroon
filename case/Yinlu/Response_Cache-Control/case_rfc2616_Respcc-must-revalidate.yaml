@@ -1,0 +1,66 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_Respcc-must-revalidate
+# Case Description:
+#       Cache MUST cache the response if the response header with must-revalidate only 
+# Testing Steps: 
+#       Step 1: send request with cache-control: must-revalidate
+#       Step 2: check whether the cached expired
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: send request with cache-control: must-revalidate
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqPragma-must-revalidate',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: '/ReqPragma-must-revalidate',
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: 'must-revalidate',
+        Content-Length: 36,
+        Connection: close,
+        body: The body for request must-revalidate,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 36,
+        body: The body for request must-revalidate,
+    }
+}
+
+#step 2: check whether the cache expired
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqPragma-must-revalidate',
+        protocol: HTTP/1.1,
+        Connection: close,
+    },
+    ServerCheck: {
+        uri: '/ReqPragma-must-revalidate',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 8,
+        Connection: close,
+        body: The body,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 8,
+        body: The body,
+    }
+}

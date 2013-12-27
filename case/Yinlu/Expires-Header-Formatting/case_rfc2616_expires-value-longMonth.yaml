@@ -1,0 +1,63 @@
+# ------------------------------------------------
+# Case Name:
+#     expires-value-longMonth 
+# Case Description: 
+#     expires value long month
+# Testing Steps: 
+#     step 1: make a request that request header with long month 
+#     step 2: identify whether cached this response
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: make a request that request header with long month
+--- {
+     Request: {
+        method: GET,
+        uri: '/expires-value-longMonth',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/expires-value-longMonth',
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Expires: "Date: Mon, 09 December 2015 08:22:25 GMT",
+        Content-Length: 21,
+        Connection: close,
+        body: This body for expires,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 21,
+        Date: D_Date_Step1,
+        body: This body for expires,
+    }
+}
+
+
+#step 2: identify whether cached this response
+--- {
+     Request: {
+        method: GET,
+        uri: '/expires-value-longMonth',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: EXCLUDE,
+        protocol: EXCLUDE,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        content-length: 21,
+        Date: D_Date_Step1,
+        body: This body for expires,
+    }
+}

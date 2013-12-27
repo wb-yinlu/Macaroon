@@ -1,0 +1,66 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_Respcc-no-store
+# Case Description:
+#       Cache MUST cache the response if the response header with no-store only 
+# Testing Steps: 
+#       Step 1: send request with cache-control: no-store
+#       Step 2: check whether the cached expired
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: send request with cache-control: no-store
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqPragma-no-store',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: '/ReqPragma-no-store',
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: 'no-store',
+        Content-Length: 29,
+        Connection: close,
+        body: The body for request no-store,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 29,
+        body: The body for request no-store,
+    }
+}
+
+#step 2: check whether the cache expired
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqPragma-no-store',
+        protocol: HTTP/1.1,
+        Connection: close,
+    },
+    ServerCheck: {
+        uri: '/ReqPragma-no-store',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 8,
+        Connection: close,
+        body: The body,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 8,
+        body: The body,
+    }
+}

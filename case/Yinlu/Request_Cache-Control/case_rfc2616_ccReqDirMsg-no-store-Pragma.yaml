@@ -1,0 +1,92 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_ReqCC-no-store-respFrom
+# Case Description: 
+#     Cache MUST not use entity in cache if request with cache-control=no-store
+# Testing Steps: 
+#     step 1: request a reource 
+#     step 2: check whether the resource be cached
+#     step 3: request with no-store
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: request a reource
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqCC-no-store',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: '/ReqCC-no-store',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 29,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Connection: close,
+        body: The body for request no-store,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 29,
+        Date: S_Date_Step1,
+        body: The body for request no-store,
+    }
+}
+
+#step 2: check whether resource be cached
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqCC-no-store',
+        protocol: HTTP/1.1,
+        Connection: close,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Date: S_Date_Step1,
+        body: "The body for request no-store",
+    }
+}
+
+#step 3: request with no-store 
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqCC-no-store',
+        protocol: HTTP/1.1,
+        Cache-Control: no-store,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: "/ReqCC-no-store",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 2,
+        Last-Modified: now-31536000,
+        Expires: now+31536000,
+        Connection: close,
+        body: Rj,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 2,
+        Date: S_Date_Step3,
+        body: Rj,
+    }
+
+}
+

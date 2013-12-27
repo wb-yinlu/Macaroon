@@ -1,0 +1,53 @@
+# ------------------------------------------------
+# Case Name:
+#     pragma-req-withParamValue 
+# Case Description: 
+#     paragma reqonse with serverl tokens ,can be through
+# Testing Steps: 
+#     step 1: make a request that request header with ParamValue
+#     step 2: identify whether cached this reqonse
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: make a request that reqonse header withParamValue
+--- {
+     Request: {
+        method: GET,
+        uri: '/pragma-req-withParamValue',
+        protocol: HTTP/1.1,
+        Pragma: "param=quoted-value",
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 21,
+        Connection: close,
+        body: This body for pragama,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 21,
+        body: This body for pragama,
+    }
+}
+
+
+#step 2: identify whether not cached this reqonse
+--- {
+     Request: {
+        method: GET,
+        uri: '/pragma-req-withParamValue',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        protocol: HTTP/1.1,
+        uri: '/pragma-req-withParamValue',
+        Host: "macaroon.zymlinux.net",
+    },
+}

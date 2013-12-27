@@ -1,0 +1,95 @@
+# ------------------------------------------------
+# Case Name:
+#     expires-value-httpdlike 
+# Case Description: 
+#     expires value in apache httpd like  date
+# Testing Steps: 
+#     step 1: make a request that request header with  httpd like  date
+#     step 2: identify whether cached this response
+#     step 3: identify whether cached expired
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: make a request that request header with  httpd like  date
+--- {
+     Request: {
+        method: GET,
+        uri: '/expires-value-httpdlike',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/expires-value-httpdlike',
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Expires: now+6,
+        Content-Length: 21,
+        Connection: close,
+        body: This body for expires,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 21,
+        Date: D_Date_Step1,
+        body: This body for expires,
+    }
+}
+
+#step 2: identify whether cached this response
+--- {
+     Request: {
+        method: GET,
+        uri: '/expires-value-httpdlike',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: exclude,
+        protocol: exclued,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        content-length: 21,
+        Date: D_Date_Step1,
+        body: This body for expires,
+    }
+}
+--- {
+    sleep: 10
+}
+
+#step 3: identify whether cached expired
+--- {
+     Request: {
+        method: GET,
+        uri: '/expires-value-httpdlike',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/expires-value-httpdlike',
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 21,
+        Connection: close,
+        body: This body for expires,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        content-length: 21,
+        Date: D_Date_Step3,
+        body: This body for expires,
+    }
+}

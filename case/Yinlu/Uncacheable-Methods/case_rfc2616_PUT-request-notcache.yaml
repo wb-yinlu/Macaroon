@@ -1,0 +1,72 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_PUT-request-notcache
+# Case Description: 
+#       cache MUST NOT cache response to PUT request 
+# Testing Steps: 
+#       step 1: Do PUT request
+#       step 2: check whether is not cached
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#step 1: Do PUT request
+--- {
+     Request: {
+        method: PUT,
+        uri: '/case_rfc2616_PUT-request-notcache',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: PUT,
+        uri: '/case_rfc2616_PUT-request-notcache',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+	Cache-Control: public,maxage=180,
+        Content-Length: 40,
+        Connection: close,
+        body: crjccuwcdwjxwgivajlapefftjjvportfavjwsoz,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        cache-control: public,maxage=180,
+        content-length: 40,
+        Connection: close,
+        body: crjccuwcdwjxwgivajlapefftjjvportfavjwsoz,
+    }
+}
+
+#step 2: check whether is not cached
+--- {
+     Request: {
+        method: PUT,
+        uri: '/case_rfc2616_PUT-request-notcache',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: PUT,
+        uri: '/case_rfc2616_PUT-request-notcache',
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 3,
+        Connection: close,
+        body: crj,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        cache-control: public,
+        content-length: 3,
+        Connection: close,
+        body: crj,
+    }
+}

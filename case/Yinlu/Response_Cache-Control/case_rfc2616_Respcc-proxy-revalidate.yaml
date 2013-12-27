@@ -1,0 +1,66 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_Respcc-proxy-revalidate
+# Case Description:
+#       Cache MUST cache the response if the response header with proxy-revalidate only 
+# Testing Steps: 
+#       Step 1: send request with cache-control: proxy-revalidate
+#       Step 2: check whether the cached expired
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: send request with cache-control: proxy-revalidate
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqPragma-proxy-revalidate',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: '/ReqPragma-proxy-revalidate',
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: 'proxy-revalidate',
+        Content-Length: 37,
+        Connection: close,
+        body: The body for request proxy-revalidate,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 37,
+        body: The body for request proxy-revalidate,
+    }
+}
+
+#step 2: check whether the cache expired
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqPragma-proxy-revalidate',
+        protocol: HTTP/1.1,
+        Connection: close,
+    },
+    ServerCheck: {
+        uri: '/ReqPragma-proxy-revalidate',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 8,
+        Connection: close,
+        body: The body,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 8,
+        body: The body,
+    }
+}

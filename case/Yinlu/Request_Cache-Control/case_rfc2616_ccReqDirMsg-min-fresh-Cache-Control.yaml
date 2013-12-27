@@ -1,0 +1,60 @@
+# ------------------------------------------------
+# Case Name:
+#     case_rfc2616_ReqCC-min-fresh-respFrom
+# Case Description: 
+#     Cache MUST not use entity in cache if request with cache-control=min-fresh
+# Testing Steps: 
+#     step 1: request a reource 
+#     step 2: check whether the resource be cached
+#     step 3: request with min-fresh
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: request a reource
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqCC-min-fresh',
+        protocol: HTTP/1.1,
+        Cache-Control: max-age=200,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: '/ReqCC-min-fresh',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 30,
+        Connection: close,
+        body: The body for request min-fresh,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 30,
+        Date: S_Date_Step1,
+        body: The body for request min-fresh,
+    }
+}
+
+#step 2: check whether resource be cached
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqCC-min-fresh',
+        protocol: HTTP/1.1,
+        Connection: close,
+    },
+    ServerCheck: {
+        uri: exclude,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Date: S_Date_Step1,
+        body: "The body for request min-fresh",
+    }
+}
+

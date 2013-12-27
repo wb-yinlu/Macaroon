@@ -1,0 +1,90 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_Respcc-maxageOnly
+# Case Description:
+#       Cache MUST cache the response if the response header with maxage only 
+# Testing Steps: 
+#       Step 1: send request with cache-control: max-age
+#       Step 2: check whether the request is cached
+#       Step 3: check whether the cached expired
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: send request with cache-control: max-age
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqPragma-max-age',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: '/ReqPragma-max-age',
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: 'public,max-age=5',
+        Content-Length: 28,
+        Connection: close,
+        body: The body for request max-age,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 28,
+        body: The body for request max-age,
+    }
+}
+
+#step 2: check whether the request is cached
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqPragma-max-age',
+        protocol: HTTP/1.1,
+        Connection: close,
+    },
+    ServerCheck: {
+        uri: exclude,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 28,
+        body: The body for request max-age,
+    }
+}
+
+--- {
+    sleep: 6
+}
+
+#step 3: check whether the cache expired
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqPragma-max-age',
+        protocol: HTTP/1.1,
+        Connection: close,
+    },
+    ServerCheck: {
+        uri: '/ReqPragma-max-age',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 8,
+        Connection: close,
+        body: The body,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 8,
+        body: The body,
+    }
+}

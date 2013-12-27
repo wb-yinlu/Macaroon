@@ -1,0 +1,54 @@
+# ------------------------------------------------
+# Case Name:
+#     pragma-req-withSeveralTokens 
+# Case Description: 
+#     paragma reqonse with serverl tokens ,can be through
+# Testing Steps: 
+#     step 1: make a reqonse that request header with 2 pragma tokens
+#     step 2: identify whether cached this reqonse
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: make a reqonse that request header with 2 pragma tokens
+--- {
+     Request: {
+        method: GET,
+        uri: '/pragma-req-withSeveralTokens',
+        protocol: HTTP/1.1,
+        Pragma: "no-cache",
+        Pragma: "abc",
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 21,
+        Connection: close,
+        body: This body for pragama,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 21,
+        body: This body for pragama,
+    }
+}
+
+
+#step 2: identify whether not cached this reqonse
+--- {
+     Request: {
+        method: GET,
+        uri: '/pragma-req-withSeveralTokens',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        protocol: HTTP/1.1,
+        uri: '/pragma-req-withSeveralTokens',
+        Host: "macaroon.zymlinux.net",
+    },
+}

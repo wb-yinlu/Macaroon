@@ -1,0 +1,66 @@
+# ------------------------------------------------
+# Case Name:
+#       case_rfc2616_Respcc-private
+# Case Description:
+#       Cache MUST cache the response if the response header with private only 
+# Testing Steps: 
+#       Step 1: send request with cache-control: private
+#       Step 2: check whether the cached expired
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: send request with cache-control: private
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqPragma-private',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: '/ReqPragma-private',
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: 'private',
+        Content-Length: 28,
+        Connection: close,
+        body: The body for request private,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 28,
+        body: The body for request private,
+    }
+}
+
+#step 2: check whether the cache expired
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqPragma-private',
+        protocol: HTTP/1.1,
+        Connection: close,
+    },
+    ServerCheck: {
+        uri: '/ReqPragma-private',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Cache-Control: public,
+        Content-Length: 8,
+        Connection: close,
+        body: The body,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 8,
+        body: The body,
+    }
+}

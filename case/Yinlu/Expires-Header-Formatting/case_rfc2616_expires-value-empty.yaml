@@ -1,0 +1,77 @@
+# ------------------------------------------------
+# Case Name:
+#     expires-value-empty 
+# Case Description: 
+#     expires value value empty
+# Testing Steps: 
+#     step 1: make a request that request header with expires value empty
+#     step 2: identify whether cached this response
+# Author: wb-yinlu@taobao.com
+# -----------------------------------------------
+#
+#step 1: make a request that request header with expires value empty
+--- {
+     Request: {
+        method: GET,
+        uri: '/expires-value-empty',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/expires-value-empty',
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Expires: ,
+        Content-Length: 21,
+        Connection: close,
+        body: This body for expires,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 21,
+        Date: D_Date_Step1,
+        body: This body for expires,
+    }
+}
+
+
+--- {
+    sleep: 1
+}
+
+
+
+#step 2: identify whether cached this response
+--- {
+     Request: {
+        method: GET,
+        uri: '/expires-value-empty',
+        protocol: HTTP/1.1,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        method: GET,
+        uri: '/expires-value-empty',
+        protocol: HTTP/1.1,
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 9,
+        Connection: close,
+        body: This body,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        content-length: 9 ,
+        Date: D_Date_Step2,
+        body: This body,
+    }
+}
