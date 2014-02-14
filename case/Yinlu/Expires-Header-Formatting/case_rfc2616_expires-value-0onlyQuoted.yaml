@@ -1,6 +1,6 @@
 # ------------------------------------------------
 # Case Name:
-#     expires-value0-enQuoted 
+#     expires-value-0enQuoted 
 # Case Description: 
 #     expires equal zero english quoted 
 # Testing Steps: 
@@ -13,14 +13,14 @@
 --- {
      Request: {
         method: GET,
-        uri: '/expires-value0-enQuoted',
+        uri: '/expires-value-0enQuoted',
         protocol: HTTP/1.1,
         Connection: close,
         Host: "macaroon.zymlinux.net",
     },
     ServerCheck: {
         method: GET,
-        uri: '/expires-value0-enQuoted',
+        uri: '/expires-value-0enQuoted',
         protocol: HTTP/1.1,
     },
     Response: {
@@ -28,6 +28,7 @@
         statuscode: 200,
         Date: now,
         Expires: "0",
+        Last-Modified:now-3600,
         Content-Length: 21,
         Connection: close,
         body: This body for expires,
@@ -45,27 +46,25 @@
     sleep: 1
 }
 
-
-#step 2: identify whether not cached this response
+#step 2: identify whether go back to resource
 --- {
      Request: {
         method: GET,
-        uri: '/expires-value0-enQuoted',
+        uri: '/expires-value-0enQuoted',
         protocol: HTTP/1.1,
+        If-Modified-Since:now,
         Connection: close,
         Host: "macaroon.zymlinux.net",
     },
     ServerCheck: {
-        method: GET,
-        protocol: HTTP/1.1,
-        uri: '/expires-value0-enQuoted',
-        Host: "macaroon.zymlinux.net",
+        uri: '/expires-value-0enQuoted',
     },
     Response: {
         protocol: HTTP/1.1,
         statuscode: 200,
-        Date: now,
-        Content-Length: 9,
+        Cache-Control: public,
+        Last-Modified:now-3600,
+        content-length: 9,
         Connection: close,
         body: This body,
     },
@@ -77,4 +76,3 @@
         body: This body,
     }
 }
-

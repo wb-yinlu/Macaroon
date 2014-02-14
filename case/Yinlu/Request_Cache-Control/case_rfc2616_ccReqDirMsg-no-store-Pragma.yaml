@@ -25,10 +25,9 @@
     Response: {
         protocol: HTTP/1.1,
         statuscode: 200,
-        Cache-Control: public,
+        Cache-Control: public,max-age=100,
         Content-Length: 29,
-        Last-Modified: now-31536000,
-        Expires: now+31536000,
+        Date: now,
         Connection: close,
         body: The body for request no-store,
     },
@@ -48,6 +47,9 @@
         uri: '/ReqCC-no-store',
         protocol: HTTP/1.1,
         Connection: close,
+    },
+    ServerCheck: {
+        uri: exclude,
     },
     ClientCheck: {
         protocol: HTTP/1.1,
@@ -73,10 +75,7 @@
     Response: {
         protocol: HTTP/1.1,
         statuscode: 200,
-        Cache-Control: public,
         Content-Length: 2,
-        Last-Modified: now-31536000,
-        Expires: now+31536000,
         Connection: close,
         body: Rj,
     },

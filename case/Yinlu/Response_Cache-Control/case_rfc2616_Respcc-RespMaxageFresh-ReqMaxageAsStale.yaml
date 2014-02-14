@@ -15,7 +15,6 @@
      Request: {
         method: GET,
         uri: '/Respcc-RespMaxage-ReqMaxage',
-        Cache-Control: 'public,max-age=5',
         protocol: HTTP/1.1,
         Connection: close,
         Host: "macaroon.zymlinux.net",
@@ -42,7 +41,7 @@
 
 
 --- {
-    sleep: 5
+    sleep: 3
 }
 
 #step 2: check whether the cache expired
@@ -64,15 +63,13 @@
     }
 }
 
---- {
-    sleep: 6
-}
 #step 3: check whether the cache expired
 --- {
      Request: {
         method: GET,
         uri: '/Respcc-RespMaxage-ReqMaxage',
         protocol: HTTP/1.1,
+        Cache-Control: 'public,max-age=2',
         Connection: close,
     },
     ServerCheck: {

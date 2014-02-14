@@ -15,7 +15,7 @@
         method: GET,
         uri: '/pragma-req-withParamQuotedValue',
         protocol: HTTP/1.1,
-        Pragma: "param='quoted-value'",
+        Pragma: "param='mcrtest'",
         Connection: close,
         Host: "macaroon.zymlinux.net",
     },

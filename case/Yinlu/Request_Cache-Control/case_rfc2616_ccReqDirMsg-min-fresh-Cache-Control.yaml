@@ -6,7 +6,8 @@
 # Testing Steps: 
 #     step 1: request a reource 
 #     step 2: check whether the resource be cached
-#     step 3: request with min-fresh
+#     step 3: request cache-control time less than cached-time
+#     step 4: request cache-control time more than cached-time
 # Author: wb-yinlu@taobao.com
 # -----------------------------------------------
 #
@@ -16,7 +17,6 @@
         method: GET,
         uri: '/ReqCC-min-fresh',
         protocol: HTTP/1.1,
-        Cache-Control: max-age=200,
         Connection: close,
         Host: "macaroon.zymlinux.net",
     },
@@ -26,6 +26,7 @@
     Response: {
         protocol: HTTP/1.1,
         statuscode: 200,
+        Cache-Control: max-age=200,
         Content-Length: 30,
         Connection: close,
         body: The body for request min-fresh,
@@ -58,3 +59,59 @@
     }
 }
 
+
+--- {
+    sleep: 6
+}
+
+#step 3: request cache-control time less than cached-time
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqCC-min-fresh',
+        protocol: HTTP/1.1,
+        Cache-Control: max-age=60,
+        Connection: close,
+    },
+    ServerCheck: {
+        uri: exclude,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Date: S_Date_Step1,
+        Content-Length: 30,
+        body: "The body for request min-fresh",
+    }
+}
+
+
+
+#step 4: request cache-control time more than cached-time
+--- {
+     Request: {
+        method: GET,
+        uri: '/ReqCC-min-fresh',
+        protocol: HTTP/1.1,
+        Cache-Control: max-age=3,
+        Connection: close,
+        Host: "macaroon.zymlinux.net",
+    },
+    ServerCheck: {
+        uri: '/ReqCC-min-fresh',
+    },
+    Response: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        Content-Length: 8,
+        Connection: close,
+        body: The body,
+    },
+    ClientCheck: {
+        protocol: HTTP/1.1,
+        statuscode: 200,
+        content-length: 8,
+        Date: S_Date_Step4,
+        body: The body,
+    }
+}

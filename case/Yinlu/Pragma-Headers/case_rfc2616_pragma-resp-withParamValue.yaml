@@ -21,7 +21,7 @@
     Response: {
         protocol: HTTP/1.1,
         statuscode: 200,
-        Pragma: "param=quoted-value",
+        Pragma: "param=10",
         Content-Length: 21,
         Connection: close,
         body: This body for pragama,

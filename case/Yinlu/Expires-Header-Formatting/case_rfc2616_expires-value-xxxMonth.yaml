@@ -26,7 +26,7 @@
     Response: {
         protocol: HTTP/1.1,
         statuscode: 200,
-        Expires: "Date: Mon, 09 Xxx 2015 08:22:25 GMT",
+        Expires: "Mon, 09 Jan 2015 08:22:25 GMT",
         Content-Length: 21,
         Connection: close,
         body: This body for expires,
@@ -57,21 +57,6 @@
         Host: "macaroon.zymlinux.net",
     },
     ServerCheck: {
-        method: GET,
-        uri: '/expires-value-xxxMonth',
-        protocol: HTTP/1.1,
+        uri: exclude,
     },
-    Response: {
-        protocol: HTTP/1.1,
-        statuscode: 200,
-        Content-Length: 9,
-        Connection: close,
-        body: This body,
-    },
-    ClientCheck: {
-        protocol: HTTP/1.1,
-        content-length: 9,
-        Date: D_Date_Step2,
-        body: This body,
-    }
 }
