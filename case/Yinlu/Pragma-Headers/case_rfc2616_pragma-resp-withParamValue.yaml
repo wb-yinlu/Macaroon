@@ -2,7 +2,7 @@
 # Case Name:
 #     pragma-resp-withParamValue 
 # Case Description: 
-#     paragma response with serverl tokens ,can be through
+#     pragma response with several tokens ,can be through
 # Testing Steps: 
 #     step 1: make a request that response header with ParamValue
 #     step 2: identify whether cached this response

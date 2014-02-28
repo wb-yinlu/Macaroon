@@ -2,7 +2,7 @@
 # Case Name:
 #     pragma-resp-withSeveralTokens 
 # Case Description: 
-#     paragma response with serverl tokens ,can be through
+#     pragma response with several tokens ,can be through
 # Testing Steps: 
 #     step 1: make a response that response header with 2 pragma tokens
 #     step 2: identify whether cached this response

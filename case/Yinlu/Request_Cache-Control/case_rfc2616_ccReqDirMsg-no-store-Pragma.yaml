@@ -4,13 +4,13 @@
 # Case Description: 
 #     Cache MUST not use entity in cache if request with cache-control=no-store
 # Testing Steps: 
-#     step 1: request a reource 
+#     step 1: request a resource 
 #     step 2: check whether the resource be cached
 #     step 3: request with no-store
 # Author: wb-yinlu@taobao.com
 # -----------------------------------------------
 #
-#step 1: request a reource
+#step 1: request a resource
 --- {
      Request: {
         method: GET,

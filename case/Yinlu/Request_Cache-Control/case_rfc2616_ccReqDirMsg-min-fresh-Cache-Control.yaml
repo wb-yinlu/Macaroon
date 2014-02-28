@@ -4,14 +4,14 @@
 # Case Description: 
 #     Cache MUST not use entity in cache if request with cache-control=min-fresh
 # Testing Steps: 
-#     step 1: request a reource 
+#     step 1: request a resource 
 #     step 2: check whether the resource be cached
 #     step 3: request cache-control time less than cached-time
 #     step 4: request cache-control time more than cached-time
 # Author: wb-yinlu@taobao.com
 # -----------------------------------------------
 #
-#step 1: request a reource
+#step 1: request a resource
 --- {
      Request: {
         method: GET,

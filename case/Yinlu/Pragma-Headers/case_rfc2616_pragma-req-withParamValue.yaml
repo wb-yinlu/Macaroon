@@ -2,14 +2,14 @@
 # Case Name:
 #     pragma-req-withParamValue 
 # Case Description: 
-#     paragma reqonse with serverl tokens ,can be through
+#     pragma response with several tokens ,can be through
 # Testing Steps: 
 #     step 1: make a request that request header with ParamValue
-#     step 2: identify whether cached this reqonse
+#     step 2: identify whether cached this response
 # Author: wb-yinlu@taobao.com
 # -----------------------------------------------
 #
-#step 1: make a request that reqonse header withParamValue
+#step 1: make a request that response header withParamValue
 --- {
      Request: {
         method: GET,
@@ -35,7 +35,7 @@
 }
 
 
-#step 2: identify whether not cached this reqonse
+#step 2: identify whether not cached this response
 --- {
      Request: {
         method: GET,

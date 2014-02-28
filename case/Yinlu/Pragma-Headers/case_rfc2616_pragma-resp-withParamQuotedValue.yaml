@@ -2,7 +2,7 @@
 # Case Name:
 #     pragma-resp-withParamQuotedValue 
 # Case Description: 
-#     paragma response with serverl tokens ,can be through
+#     pragma response with several tokens ,can be through
 # Testing Steps: 
 #     step 1: make a request that response header with ParamQuotedValue
 #     step 2: identify whether cached this response
